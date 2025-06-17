@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airtable API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .test-step {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .field-list {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .field-list h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        .field-item {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background-color: white;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Airtable API Connection Test</h1>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label for="apiKey">API Key (Personal Access Token):</label>
+                <input type="password" id="apiKey" name="apiKey" placeholder="pat..." required>
+                <small>Debe comenzar con 'pat...'</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="baseId">Base ID:</label>
+                <input type="text" id="baseId" name="baseId" placeholder="app..." required>
+                <small>Debe comenzar con 'app...'</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="tableName">Table Name:</label>
+                <input type="text" id="tableName" name="tableName" placeholder="Recetas Emitidas" required>
+                <small>Nombre exacto de la tabla en Airtable</small>
+            </div>
+            
+            <button type="submit" id="testBtn">🔍 Probar Conexión</button>
+            <button type="button" id="clearBtn">🧹 Limpiar</button>
+        </form>
+
+        <div class="field-list">
+            <h4>📋 Campos Esperados (según airtableService.ts):</h4>
+            <div class="field-item">Nombre_Paciente</div>
+            <div class="field-item">Edad_Paciente</div>
+            <div class="field-item">Fecha_Nacimiento_Paciente</div>
+            <div class="field-item">ID_Expediente_Paciente</div>
+            <div class="field-item">Fecha_Hora_Emision</div>
+            <div class="field-item">Nombre_Doctor</div>
+            <div class="field-item">Cedula_Profesional_Doctor</div>
+            <div class="field-item">Universidad_Doctor</div>
+            <div class="field-item">Nombre_Clinica</div>
+            <div class="field-item">Direccion_Clinica</div>
+            <div class="field-item">Telefono_Clinica</div>
+            <div class="field-item">Email_Clinica</div>
+            <div class="field-item">URL_Logo1</div>
+            <div class="field-item">URL_Logo2</div>
+            <div class="field-item">Medicamentos</div>
+            <div class="field-item">Notas_Generales</div>
+        </div>
+        
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        const expectedFields = [
+            'Nombre_Paciente',
+            'Edad_Paciente',
+            'Fecha_Nacimiento_Paciente',
+            'ID_Expediente_Paciente',
+            'Fecha_Hora_Emision',
+            'Nombre_Doctor',
+            'Cedula_Profesional_Doctor',
+            'Universidad_Doctor',
+            'Nombre_Clinica',
+            'Direccion_Clinica',
+            'Telefono_Clinica',
+            'Email_Clinica',
+            'URL_Logo1',
+            'URL_Logo2',
+            'Medicamentos',
+            'Notas_Generales'
+        ];
+
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await runTests();
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('testForm').reset();
+            document.getElementById('results').style.display = 'none';
+        });
+
+        async function runTests() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const baseId = document.getElementById('baseId').value.trim();
+            const tableName = document.getElementById('tableName').value.trim();
+            
+            const testBtn = document.getElementById('testBtn');
+            const results = document.getElementById('results');
+            
+            // Disable button and show loading
+            testBtn.disabled = true;
+            testBtn.innerHTML = '🔍 Probando... <span class="loading"></span>';
+            
+            let html = '<h3>📊 Resultados de las Pruebas</h3>';
+            let hasErrors = false;
+
+            try {
+                // Test 1: Validate input format
+                html += '<div class="test-step"><strong>Paso 1:</strong> Validando formato de credenciales...</div>';
+                
+                if (!apiKey.startsWith('pat')) {
+                    html += '<div class="results error">❌ Error: El API Key debe comenzar con "pat"</div>';
+                    hasErrors = true;
+                }
+                
+                if (!baseId.startsWith('app')) {
+                    html += '<div class="results error">❌ Error: El Base ID debe comenzar con "app"</div>';
+                    hasErrors = true;
+                }
+                
+                if (!tableName) {
+                    html += '<div class="results error">❌ Error: El nombre de la tabla es obligatorio</div>';
+                    hasErrors = true;
+                }
+
+                if (!hasErrors) {
+                    html += '<div class="results success">✅ Formato de credenciales válido</div>';
+                }
+
+                // Test 2: Test API connection
+                html += '<div class="test-step"><strong>Paso 2:</strong> Probando conexión a la API...</div>';
+                
+                const endpoint = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
+                
+                const response = await fetch(`${endpoint}?maxRecords=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    let errorMessage = 'Error desconocido';
+                    
+                    switch (response.status) {
+                        case 401:
+                            errorMessage = 'API Key inválido o expirado';
+                            break;
+                        case 403:
+                            errorMessage = 'Permisos insuficientes. Asegúrate de que el token tenga permisos de lectura/escritura';
+                            break;
+                        case 404:
+                            errorMessage = `Base ID "${baseId}" o tabla "${tableName}" no encontrada`;
+                            break;
+                        case 422:
+                            errorMessage = 'Datos de solicitud inválidos';
+                            break;
+                        default:
+                            errorMessage = `Error HTTP ${response.status}: ${errorData.error?.message || response.statusText}`;
+                    }
+                    
+                    html += `<div class="results error">❌ Error de conexión: ${errorMessage}</div>`;
+                    hasErrors = true;
+                } else {
+                    html += '<div class="results success">✅ Conexión exitosa a la API de Airtable</div>';
+                    
+                    // Test 3: Validate table schema
+                    html += '<div class="test-step"><strong>Paso 3:</strong> Validando estructura de la tabla...</div>';
+                    
+                    const data = await response.json();
+                    
+                    if (!data.records || data.records.length === 0) {
+                        html += '<div class="results warning">⚠️ La tabla está vacía. No se pueden validar los campos.</div>';
+                        html += '<div class="results info">💡 Consejo: Agrega al menos un registro de prueba para validar los campos.</div>';
+                    } else {
+                        // Get fields from first record
+                        const actualFields = Object.keys(data.records[0].fields || {});
+                        
+                        html += '<div class="test-step"><strong>Paso 4:</strong> Comparando campos esperados vs actuales...</div>';
+                        
+                        const missingFields = expectedFields.filter(field => !actualFields.includes(field));
+                        const extraFields = actualFields.filter(field => !expectedFields.includes(field));
+                        
+                        if (missingFields.length === 0 && extraFields.length === 0) {
+                            html += '<div class="results success">✅ Todos los campos coinciden perfectamente</div>';
+                        } else {
+                            if (missingFields.length > 0) {
+                                html += '<div class="results warning">⚠️ Campos faltantes en Airtable:</div>';
+                                html += '<ul>';
+                                missingFields.forEach(field => {
+                                    html += `<li><code>${field}</code></li>`;
+                                });
+                                html += '</ul>';
+                            }
+                            
+                            if (extraFields.length > 0) {
+                                html += '<div class="results info">ℹ️ Campos adicionales en Airtable (no afectan la funcionalidad):</div>';
+                                html += '<ul>';
+                                extraFields.forEach(field => {
+                                    html += `<li><code>${field}</code></li>`;
+                                });
+                                html += '</ul>';
+                            }
+                        }
+                        
+                        html += '<div class="field-list">';
+                        html += '<h4>📋 Campos encontrados en la tabla:</h4>';
+                        actualFields.forEach(field => {
+                            const isExpected = expectedFields.includes(field);
+                            html += `<div class="field-item" style="color: ${isExpected ? '#28a745' : '#6c757d'}">${field} ${isExpected ? '✅' : '➕'}</div>`;
+                        });
+                        html += '</div>';
+                    }
+                }
+
+                // Test 4: Test write permissions (dry run)
+                html += '<div class="test-step"><strong>Paso 5:</strong> Probando permisos de escritura (simulación)...</div>';
+                
+                try {
+                    // Try to create a minimal test record to check permissions
+                    const testEndpoint = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
+                    const testResponse = await fetch(testEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            records: [{
+                                fields: {
+                                    'Nombre_Paciente': 'TEST - BORRAR',
+                                    'Fecha_Hora_Emision': new Date().toISOString()
+                                }
+                            }]
+                        }),
+                    });
+
+                    if (testResponse.ok) {
+                        // If successful, delete the test record
+                        const testData = await testResponse.json();
+                        if (testData.records && testData.records.length > 0) {
+                            const recordId = testData.records[0].id;
+                            await fetch(`${testEndpoint}/${recordId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${apiKey}`,
+                                },
+                            });
+                        }
+                        html += '<div class="results success">✅ Permisos de escritura confirmados</div>';
+                    } else {
+                        const errorData = await testResponse.json();
+                        html += `<div class="results error">❌ Error de permisos de escritura: ${errorData.error?.message || 'Error desconocido'}</div>`;
+                        hasErrors = true;
+                    }
+                } catch (error) {
+                    html += `<div class="results error">❌ Error al probar permisos de escritura: ${error.message}</div>`;
+                    hasErrors = true;
+                }
+
+            } catch (error) {
+                html += `<div class="results error">❌ Error de red o conexión: ${error.message}</div>`;
+                hasErrors = true;
+            }
+
+            // Final summary
+            if (!hasErrors) {
+                html += '<div class="results success"><strong>🎉 ¡Todas las pruebas pasaron exitosamente!</strong><br>Tu configuración de Airtable está lista para usar.</div>';
+            } else {
+                html += '<div class="results error"><strong>❌ Algunas pruebas fallaron</strong><br>Revisa los errores anteriores y corrige la configuración.</div>';
+            }
+
+            results.innerHTML = html;
+            results.style.display = 'block';
+            
+            // Re-enable button
+            testBtn.disabled = false;
+            testBtn.innerHTML = '🔍 Probar Conexión';
+        }
+    </script>
+</body>
+</html>

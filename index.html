@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Recetas Médicas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4HC9cpXiGNB3seBFDzkPC3dsEwoO77ZF4UAUVDRVolErP3MHzDWEdKWWpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      // Immediate check after CDN scripts
+      console.log('--- START DIAGNOSTIC CHECK ---');
+      // Check html2canvas
+      console.log('[DIAGNOSTIC] window.html2canvas:', typeof window.html2canvas === 'function' ? 'Found (function)' : window.html2canvas);
+
+      // Check jsPDF (main UMD pattern)
+      console.log('[DIAGNOSTIC] Checking for window.jspdf object...');
+      if (typeof window.jspdf === 'object' && window.jspdf !== null) {
+        console.log('[DIAGNOSTIC] window.jspdf: Found (object)');
+        console.log('[DIAGNOSTIC] Checking for window.jspdf.jsPDF function...');
+        console.log('[DIAGNOSTIC] window.jspdf.jsPDF:', typeof window.jspdf.jsPDF === 'function' ? 'Found (function)' : window.jspdf.jsPDF);
+      } else {
+        console.log('[DIAGNOSTIC] window.jspdf: Not found or not an object. Value:', window.jspdf);
+      }
+
+      // Check jsPDF (fallback direct global)
+      console.log('[DIAGNOSTIC] Checking for window.jsPDF function (fallback)...');
+      console.log('[DIAGNOSTIC] window.jsPDF (fallback check):', typeof window.jsPDF === 'function' ? 'Found (function)' : window.jsPDF);
+      console.log('--- END DIAGNOSTIC CHECK ---');
+    </script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: 'var(--color-primary)',
+              secondary: 'var(--color-secondary)',
+              accent: 'var(--color-accent)',
+              neutral: 'var(--color-neutral)',
+              'base-100': 'var(--color-base-100)',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      :root {
+        --color-primary: #3B82F6; /* Blue 500 */
+        --color-secondary: #10B981; /* Emerald 500 */
+        --color-accent: #EC4899; /* Pink 500 */
+        --color-neutral: #4B5563; /* Gray 600 */
+        --color-base-100: #F9FAFB; /* Gray 50 */
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--color-base-100);
+      }
+      /* Ensure html2canvas captures the background color of elements */
+      .prescription-preview-area {
+        background-color: white !important; /* Or any desired background */
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "uuid": "https://esm.sh/uuid@^11.1.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

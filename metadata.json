@@ -1,0 +1,6 @@
+{
+  "name": "Copy of Panel de Recetas Médicas",
+  "description": "Un panel para crear, gestionar y exportar recetas médicas como archivos PDF. Los usuarios pueden ingresar detalles del paciente, agregar múltiples medicamentos con dosis e instrucciones, e incluir notas generales.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
