@@ -32,13 +32,7 @@ cd panel-de-recetas-médicas
 npm install
 ```
 
-3. Configura las variables de entorno:
-```bash
-# Crea un archivo .env.local
-GEMINI_API_KEY=tu_api_key_aqui
-```
-
-4. Ejecuta el servidor de desarrollo:
+3. Ejecuta el servidor de desarrollo:
 ```bash
 npm run dev
 ```
@@ -58,11 +52,6 @@ git push -u origin main
 
 2. Ve a [Vercel](https://vercel.com) y conecta tu repositorio de GitHub
 
-3. Configura las variables de entorno en Vercel:
-   - Ve a tu proyecto en Vercel
-   - Settings → Environment Variables
-   - Agrega: `GEMINI_API_KEY` con tu API key
-
 ### Opción 2: Vercel CLI
 
 1. Instala Vercel CLI:
@@ -74,8 +63,6 @@ npm i -g vercel
 ```bash
 vercel
 ```
-
-3. Sigue las instrucciones y configura las variables de entorno cuando se solicite.
 
 ## Scripts Disponibles
 
@@ -100,12 +87,6 @@ vercel
 ├── types.ts           # Definiciones de tipos
 └── vercel.json        # Configuración de Vercel
 ```
-
-## Variables de Entorno
-
-| Variable | Descripción | Requerida |
-|----------|-------------|-----------|
-| `GEMINI_API_KEY` | API Key de Google Gemini | Sí |
 
 ## Contribuir
 
