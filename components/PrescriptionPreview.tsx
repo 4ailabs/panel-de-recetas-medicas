@@ -95,7 +95,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
       {/* Doctor and Date Info */}
       <div className="flex justify-between items-start mb-6">
         <div className="flex-1">
-          <h2 className="text-xl font-semibold text-gray-700">Dr. {doctor.name || <span className="italic text-gray-400">Nombre del Médico</span>}</h2>
+          <h2 className="text-lg font-semibold text-gray-700">Dr. {doctor.name || <span className="italic text-gray-400">Nombre del Médico</span>}</h2>
           {doctor.professionalID && <p className="text-sm text-gray-600">Cédula Profesional: {doctor.professionalID}</p>}
           {doctor.university && <p className="text-sm text-gray-600">{doctor.university}</p>}
           {prescriptionId && <p className="text-xs text-gray-500 mt-1">Folio: {prescriptionId}</p>}
