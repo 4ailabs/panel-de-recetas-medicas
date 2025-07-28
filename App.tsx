@@ -62,6 +62,7 @@ const App: React.FC = () => {
   const [doctorInfo, setDoctorInfo] = useState<DoctorInfo>(loadDoctorInfoFromStorage());
   const [medications, setMedications] = useState<MedicationItem[]>([]);
   const [generalNotes, setGeneralNotes] = useState<string>('');
+  const [nextAppointment, setNextAppointment] = useState<string>('');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
   const [isSavingToAirtable, setIsSavingToAirtable] = useState<boolean>(false); 
 
@@ -77,6 +78,7 @@ const App: React.FC = () => {
     });
     setMedications([]);
     setGeneralNotes('');
+    setNextAppointment('');
   }, []);
 
   const handlePatientInfoChange = useCallback((field: keyof PatientInfo, value: string) => {
@@ -112,6 +114,10 @@ const App: React.FC = () => {
     setGeneralNotes(value);
   }, []);
 
+  const handleNextAppointmentChange = useCallback((value: string) => {
+    setNextAppointment(value);
+  }, []);
+
   const getCurrentDateTimeFormatted = (): string => {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -128,10 +134,11 @@ const App: React.FC = () => {
       doctor: doctorInfo,
       medications: medications,
       generalNotes: generalNotes,
+      nextAppointment: nextAppointment,
       dateTime: getCurrentDateTimeFormatted(),
       prescriptionId: generatePrescriptionId(),
     };
-  }, [patientInfo, doctorInfo, medications, generalNotes]);
+  }, [patientInfo, doctorInfo, medications, generalNotes, nextAppointment]);
 
   const handleExportPdfOnly = useCallback(async () => {
     const dataToPreview = currentPrescriptionData();
@@ -200,11 +207,12 @@ const App: React.FC = () => {
     }
   }, [currentPrescriptionData, clearPatientInfo]); 
 
-  const previewDisplayData: PrescriptionData | null = (patientInfo.name || patientInfo.age || patientInfo.dob || patientInfo.patientId || doctorInfo.name || medications.length > 0 || generalNotes || doctorInfo.professionalID || doctorInfo.clinicEmail) ? {
+  const previewDisplayData: PrescriptionData | null = (patientInfo.name || patientInfo.age || patientInfo.dob || patientInfo.patientId || doctorInfo.name || medications.length > 0 || generalNotes || nextAppointment || doctorInfo.professionalID || doctorInfo.clinicEmail) ? {
     patient: patientInfo,
     doctor: doctorInfo,
     medications: medications,
     generalNotes: generalNotes,
+    nextAppointment: nextAppointment,
     dateTime: getCurrentDateTimeFormatted(),
     prescriptionId: generatePrescriptionId(),
   } : null;
@@ -230,6 +238,8 @@ const App: React.FC = () => {
             onRemoveMedication={handleRemoveMedication}
             generalNotes={generalNotes}
             onGeneralNotesChange={handleGeneralNotesChange}
+            nextAppointment={nextAppointment}
+            onNextAppointmentChange={handleNextAppointmentChange}
             onExportAndSave={handleExportAndSave} 
             onExportPdfOnly={handleExportPdfOnly} 
             isGeneratingPdf={isGeneratingPdf}

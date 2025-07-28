@@ -93,6 +93,7 @@ export const savePrescriptionToAirtable = async (
         instrucciones: med.instructions
     }))), 
     'Notas_Generales': prescriptionData.generalNotes,
+    'Proxima_Cita': prescriptionData.nextAppointment,
   };
 
   Object.keys(fields).forEach(key => {

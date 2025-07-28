@@ -17,7 +17,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
     );
   }
 
-  const { patient, doctor, medications, generalNotes, dateTime, prescriptionId } = data;
+  const { patient, doctor, medications, generalNotes, nextAppointment, dateTime, prescriptionId } = data;
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   // Generate QR Code when prescription data changes
@@ -151,6 +151,14 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
         <section className="mb-8 p-4 border border-gray-300 rounded-md bg-gray-50">
           <h3 className="text-md font-semibold text-gray-700 mb-1">Indicaciones Generales:</h3>
           <p className="text-sm text-gray-600 whitespace-pre-line">{generalNotes}</p>
+        </section>
+      )}
+
+      {/* Next Appointment */}
+      {nextAppointment && (
+        <section className="mb-8 p-4 border border-blue-300 rounded-md bg-blue-50">
+          <h3 className="text-md font-semibold text-blue-700 mb-1">Próxima Cita:</h3>
+          <p className="text-sm text-blue-600 font-medium">{formatDisplayDate(nextAppointment)}</p>
         </section>
       )}
 
