@@ -31,7 +31,7 @@ export interface PrescriptionData {
   doctor: DoctorInfo;
   medications: MedicationItem[];
   generalNotes: string;
-  nextAppointment?: string; // Next appointment date YYYY-MM-DD
+  nextAppointment?: string; // Next appointment text (e.g., "En una semana", "En 15 días")
   dateTime: string; // Changed from 'date' to 'dateTime'
   prescriptionId: string; // Unique prescription ID/folio
 }

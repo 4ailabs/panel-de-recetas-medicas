@@ -158,7 +158,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
       {nextAppointment && (
         <section className="mb-8 p-4 border border-blue-300 rounded-md bg-blue-50">
           <h3 className="text-md font-semibold text-blue-700 mb-1">Próxima Cita:</h3>
-          <p className="text-sm text-blue-600 font-medium">{formatDisplayDate(nextAppointment)}</p>
+          <p className="text-sm text-blue-600 font-medium">{nextAppointment}</p>
         </section>
       )}
 

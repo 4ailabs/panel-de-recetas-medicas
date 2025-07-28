@@ -346,16 +346,31 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
       <section>
         <h3 className="text-xl font-semibold text-primary mb-3 border-b pb-2">Próxima Cita</h3>
         <div>
-          <label htmlFor="nextAppointment" className="block text-sm font-medium text-gray-700 mb-1">Fecha de Próxima Cita (Opcional)</label>
-          <input
-            type="date"
+          <label htmlFor="nextAppointment" className="block text-sm font-medium text-gray-700 mb-1">Próxima Cita (Opcional)</label>
+          <select
             name="nextAppointment"
             id="nextAppointment"
             value={nextAppointment}
             onChange={(e) => onNextAppointmentChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-          />
-          <p className="text-xs text-gray-500 mt-1">Programa la fecha para el seguimiento del paciente</p>
+          >
+            <option value="">Seleccionar opción</option>
+            <option value="En 3 días">En 3 días</option>
+            <option value="En una semana">En una semana</option>
+            <option value="En 10 días">En 10 días</option>
+            <option value="En 15 días">En 15 días</option>
+            <option value="En 2 semanas">En 2 semanas</option>
+            <option value="En 3 semanas">En 3 semanas</option>
+            <option value="En un mes">En un mes</option>
+            <option value="En 2 meses">En 2 meses</option>
+            <option value="En 3 meses">En 3 meses</option>
+            <option value="En 6 meses">En 6 meses</option>
+            <option value="En un año">En un año</option>
+            <option value="Seguimiento telefónico">Seguimiento telefónico</option>
+            <option value="Solo si es necesario">Solo si es necesario</option>
+            <option value="No requiere seguimiento">No requiere seguimiento</option>
+          </select>
+          <p className="text-xs text-gray-500 mt-1">Selecciona el período para el seguimiento del paciente</p>
         </div>
       </section>
       
