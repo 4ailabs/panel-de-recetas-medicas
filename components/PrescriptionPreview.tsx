@@ -154,16 +154,16 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
         </section>
       )}
 
-      {/* Next Appointment */}
-      {nextAppointment && (
-        <section className="mb-8 p-4 border border-blue-300 rounded-md bg-blue-50">
-          <h3 className="text-md font-semibold text-blue-700 mb-1">Próxima Cita:</h3>
-          <p className="text-sm text-blue-600 font-medium">{nextAppointment}</p>
-        </section>
-      )}
-
       {/* Footer Area - Pushed to bottom */}
       <footer className="mt-auto pt-8 border-t-2 border-gray-400">
+        {/* Next Appointment - Moved here to be closer to footer */}
+        {nextAppointment && (
+          <div className="mb-6 p-3 border border-blue-300 rounded-md bg-blue-50">
+            <h3 className="text-sm font-semibold text-blue-700 mb-1">Próxima Cita:</h3>
+            <p className="text-xs text-blue-600 font-medium">{nextAppointment}</p>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Column 1: Clinic Information */}
           <div className="text-xs text-gray-600">
