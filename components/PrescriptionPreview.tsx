@@ -124,8 +124,8 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
       
       {/* Medications Symbol and Title */}
       <div className="flex items-center mb-4">
-        <span className="text-3xl font-serif text-primary mr-2">℞</span>
-        <h3 className="text-xl font-semibold text-gray-700">Receta</h3>
+        <span className="text-2xl font-serif text-primary mr-2">℞</span>
+        <h3 className="text-lg font-semibold text-gray-700">Receta</h3>
       </div>
 
       {/* Medications List */}
@@ -133,8 +133,8 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
         {medications.length > 0 ? (
           medications.map((med, index) => (
             <div key={med.id} className="pb-3 border-b border-dashed border-gray-300 last:border-b-0">
-              <p className="text-md font-semibold text-gray-800">{index + 1}. {med.name || <span className="italic text-gray-400">Medicamento sin nombre</span>}</p>
-              <div className="pl-5 text-sm text-gray-600">
+              <p className="text-sm font-semibold text-gray-800">{index + 1}. {med.name || <span className="italic text-gray-400">Medicamento sin nombre</span>}</p>
+              <div className="pl-5 text-xs text-gray-600">
                 <p><span className="font-medium">Dosis:</span> {med.dosage || "N/D"}</p>
                 <p><span className="font-medium">Duración:</span> {med.duration || "N/D"}</p>
                 {med.instructions && <p><span className="font-medium">Instrucciones:</span> {med.instructions}</p>}
