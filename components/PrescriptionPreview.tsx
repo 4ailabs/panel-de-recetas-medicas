@@ -183,7 +183,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
               <div className="border-t-2 border-gray-700 pt-2">
                 {(doctor.name || doctor.professionalID || doctor.university) ? (
                   <>
-                    {doctor.name && <p className="font-semibold text-sm">Dr. {doctor.name}</p>}
+                    {doctor.name && <p className="font-semibold text-xs">Dr. {doctor.name}</p>}
                     {doctor.professionalID && <p className="text-xs">C.P. {doctor.professionalID}</p>}
                     {doctor.university && <p className="text-xs">{doctor.university}</p>}
                   </>
