@@ -113,14 +113,14 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
         </div>
       </div>
 
-      {/* Patient Information - More compact */}
-      <section className="mb-4 p-3 border border-gray-300 rounded-md bg-gray-50">
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Información del Paciente:</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-1 text-xs text-gray-800">
-            <p><span className="font-medium">Nombre:</span> {patient.name || <span className="italic text-gray-400">N/D</span>}</p>
-            {patient.patientId && <p><span className="font-medium">Expediente:</span> {patient.patientId}</p>}
-            {patient.age && <p><span className="font-medium">Edad:</span> {patient.age} años</p>}
-            {patient.dob && <p><span className="font-medium">Nacimiento:</span> {formatDisplayDate(patient.dob)}</p>}
+      {/* Patient Information - Prominent style */}
+      <section className="mb-6 p-4 border-l-4 border-blue-500 bg-blue-50">
+        <h3 className="text-sm font-medium text-blue-700 mb-2">Información del Paciente</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 text-sm text-blue-900">
+            <p><span className="font-semibold">Nombre:</span> {patient.name || <span className="italic text-blue-400">N/D</span>}</p>
+            {patient.patientId && <p><span className="font-semibold">Expediente:</span> {patient.patientId}</p>}
+            {patient.age && <p><span className="font-semibold">Edad:</span> {patient.age} años</p>}
+            {patient.dob && <p><span className="font-semibold">Nacimiento:</span> {formatDisplayDate(patient.dob)}</p>}
         </div>
       </section>
       
