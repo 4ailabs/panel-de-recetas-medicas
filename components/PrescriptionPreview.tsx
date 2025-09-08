@@ -157,7 +157,6 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
                 <div key={supplement.id} className="p-3 border border-gray-300 rounded-md bg-gray-50">
                   <p className="text-sm font-semibold text-gray-800 mb-2">{medications.length + index + 1}. {supplement.name}</p>
                   <div className="space-y-1 text-xs text-gray-600">
-                    <p><span className="font-medium">Marca:</span> {supplement.brand}</p>
                     <p><span className="font-medium">Dosis:</span> {supplement.dosage || "N/D"}</p>
                     <p><span className="font-medium">Duración:</span> {supplement.duration || "N/D"}</p>
                     {supplement.instructions && <p><span className="font-medium">Instrucciones:</span> {supplement.instructions}</p>}
