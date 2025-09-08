@@ -18,6 +18,7 @@ interface PrescriptionFormProps {
   onGeneralNotesChange: (value: string) => void;
   nextAppointment: string;
   onNextAppointmentChange: (value: string) => void;
+  onGeneratePatientId: (patientName: string) => string;
   onExportAndSave: () => void; 
   onExportPdfOnly: () => void; 
   isGeneratingPdf: boolean;
@@ -37,6 +38,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   onGeneralNotesChange,
   nextAppointment,
   onNextAppointmentChange,
+  onGeneratePatientId,
   onExportAndSave,
   onExportPdfOnly, 
   isGeneratingPdf,
@@ -287,16 +289,33 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
                 </div>
             </div>
             <div>
-                <label htmlFor="patientId" className="block text-sm font-medium text-gray-700 mb-1">Número de Expediente (Opcional)</label>
-                <input
-                    type="text"
-                    name="patientId"
-                    id="patientId"
-                    value={patientInfo.patientId}
-                    onChange={handlePatientInputChange}
-                    placeholder="Ej: EXP-00123"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-                />
+                <label htmlFor="patientId" className="block text-sm font-medium text-gray-700 mb-1">Número de Expediente (Auto-generado)</label>
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        name="patientId"
+                        id="patientId"
+                        value={patientInfo.patientId}
+                        onChange={handlePatientInputChange}
+                        placeholder="Se genera automáticamente al escribir el nombre"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                        readOnly
+                    />
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (patientInfo.name.trim()) {
+                                const newPatientId = onGeneratePatientId(patientInfo.name);
+                                onPatientInfoChange('patientId', newPatientId);
+                            }
+                        }}
+                        className="px-3 py-2 text-xs bg-blue-100 text-blue-700 border border-blue-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        disabled={!patientInfo.name.trim()}
+                    >
+                        Regenerar
+                    </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Se genera automáticamente basado en la fecha y nombre del paciente</p>
             </div>
         </div>
       </section>

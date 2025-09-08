@@ -63,7 +63,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
   return (
     <div 
       id={previewId} 
-      className="p-8 bg-white shadow-lg rounded-xl h-full overflow-y-auto prescription-preview-area flex flex-col" 
+      className="p-6 bg-white shadow-lg rounded-xl h-full overflow-y-auto prescription-preview-area flex flex-col" 
       style={{ maxWidth: '210mm', width: '100%', minHeight: '297mm', margin: '0 auto' }}
     >
       {/* Prescription Header - Logos */}
@@ -92,33 +92,35 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
         </header>
       )}
 
-      {/* Doctor and Date Info */}
-      <div className="flex justify-between items-start mb-6">
+      {/* Doctor and Date Info - More compact */}
+      <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <h2 className="text-base font-semibold text-gray-700">Dr. {doctor.name || <span className="italic text-gray-400">Nombre del Médico</span>}</h2>
-          {doctor.professionalID && <p className="text-sm text-gray-600">Cédula Profesional: {doctor.professionalID}</p>}
-          {doctor.university && <p className="text-sm text-gray-600">{doctor.university}</p>}
-          {prescriptionId && <p className="text-xs text-gray-500 mt-1">Folio: {prescriptionId}</p>}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+            {doctor.professionalID && <span>C.P. {doctor.professionalID}</span>}
+            {doctor.university && <span>{doctor.university}</span>}
+            {prescriptionId && <span>Folio: {prescriptionId}</span>}
+          </div>
         </div>
-        <div className="flex flex-col items-end space-y-2">
-          <p className="text-sm text-gray-600">Fecha y Hora: {dateTime}</p>
+        <div className="flex flex-col items-end space-y-1">
+          <p className="text-sm text-gray-600">{dateTime}</p>
           {qrCodeUrl && (
             <div className="text-center">
-              <img src={qrCodeUrl} alt="Código QR de verificación" className="w-16 h-16" />
-              <p className="text-[10px] text-gray-500 mt-1">Verificación</p>
+              <img src={qrCodeUrl} alt="Código QR de verificación" className="w-12 h-12" />
+              <p className="text-[9px] text-gray-500">Verificación</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Patient Information */}
-      <section className="mb-6 p-4 border border-gray-300 rounded-md bg-gray-50">
-        <h3 className="text-md font-semibold text-gray-700 mb-2">Información del Paciente:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-800">
+      {/* Patient Information - More compact */}
+      <section className="mb-4 p-3 border border-gray-300 rounded-md bg-gray-50">
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">Información del Paciente:</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-1 text-xs text-gray-800">
             <p><span className="font-medium">Nombre:</span> {patient.name || <span className="italic text-gray-400">N/D</span>}</p>
-            {patient.patientId && <p><span className="font-medium">No. Expediente:</span> {patient.patientId}</p>}
+            {patient.patientId && <p><span className="font-medium">Expediente:</span> {patient.patientId}</p>}
             {patient.age && <p><span className="font-medium">Edad:</span> {patient.age} años</p>}
-            {patient.dob && <p><span className="font-medium">Fecha de Nacimiento:</span> {formatDisplayDate(patient.dob)}</p>}
+            {patient.dob && <p><span className="font-medium">Nacimiento:</span> {formatDisplayDate(patient.dob)}</p>}
         </div>
       </section>
       
@@ -128,41 +130,46 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
         <h3 className="text-lg font-semibold text-gray-700">Receta</h3>
       </div>
 
-      {/* Medications List */}
-      <section className="mb-6 space-y-4">
+      {/* Medications List - Vertical layout */}
+      <section className="mb-4">
         {medications.length > 0 ? (
-          medications.map((med, index) => (
-            <div key={med.id} className="pb-3 border-b border-dashed border-gray-300 last:border-b-0">
-              <p className="text-sm font-semibold text-gray-800">{index + 1}. {med.name || <span className="italic text-gray-400">Medicamento sin nombre</span>}</p>
-              <div className="pl-5 text-xs text-gray-600">
-                <p><span className="font-medium">Dosis:</span> {med.dosage || "N/D"}</p>
-                <p><span className="font-medium">Duración:</span> {med.duration || "N/D"}</p>
-                {med.instructions && <p><span className="font-medium">Instrucciones:</span> {med.instructions}</p>}
+          <div className="space-y-3">
+            {medications.map((med, index) => (
+              <div key={med.id} className="p-3 border border-gray-300 rounded-md bg-gray-50">
+                <p className="text-sm font-semibold text-gray-800 mb-2">{index + 1}. {med.name || <span className="italic text-gray-400">Medicamento sin nombre</span>}</p>
+                <div className="space-y-1 text-xs text-gray-600">
+                  <p><span className="font-medium">Dosis:</span> {med.dosage || "N/D"}</p>
+                  <p><span className="font-medium">Duración:</span> {med.duration || "N/D"}</p>
+                  {med.instructions && <p><span className="font-medium">Instrucciones:</span> {med.instructions}</p>}
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
           <p className="text-sm text-gray-500 italic">No hay medicamentos listados.</p>
         )}
       </section>
 
-      {/* General Notes */}
-      {generalNotes && (
-        <section className="mb-8 p-4 border border-gray-300 rounded-md bg-gray-50">
-          <h3 className="text-md font-semibold text-gray-700 mb-1">Indicaciones Generales:</h3>
-          <p className="text-sm text-gray-600 whitespace-pre-line">{generalNotes}</p>
-        </section>
+      {/* General Notes and Next Appointment - Side by side */}
+      {(generalNotes || nextAppointment) && (
+        <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          {generalNotes && (
+            <section className="p-3 border border-gray-300 rounded-md bg-gray-50">
+              <h3 className="text-sm font-semibold text-gray-700 mb-1">Indicaciones Generales:</h3>
+              <p className="text-xs text-gray-600 whitespace-pre-line">{generalNotes}</p>
+            </section>
+          )}
+          {nextAppointment && (
+            <div className="p-3 border border-blue-300 rounded-md bg-blue-50">
+              <h3 className="text-sm font-semibold text-blue-700 mb-1">Próxima Cita:</h3>
+              <p className="text-xs text-blue-600 font-medium">{nextAppointment}</p>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Footer Area - Pushed to bottom */}
-      <footer className="mt-auto pt-8 border-t-2 border-gray-400">
-        {/* Next Appointment - Moved here to be closer to footer */}
-        {nextAppointment && (
-          <div className="mb-6 p-3 border border-blue-300 rounded-md bg-blue-50">
-            <h3 className="text-sm font-semibold text-blue-700 mb-1">Próxima Cita:</h3>
-            <p className="text-xs text-blue-600 font-medium">{nextAppointment}</p>
-          </div>
-        )}
+      <footer className="mt-auto pt-4 border-t-2 border-gray-400">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Column 1: Clinic Information */}

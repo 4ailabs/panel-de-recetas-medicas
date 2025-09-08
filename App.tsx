@@ -20,6 +20,40 @@ const generatePrescriptionId = (): string => {
   return `RX-${timestamp}-${randomStr}`.toUpperCase();
 };
 
+// Generate patient ID based on date and name initials (short format)
+const generatePatientId = (patientName: string): string => {
+  if (!patientName || patientName.trim() === '') {
+    return '';
+  }
+
+  // Get current date in DDMM format (shorter)
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const dateStr = `${day}${month}`;
+
+  // Extract initials from patient name
+  const nameParts = patientName.trim().split(/\s+/);
+  let initials = '';
+  
+  if (nameParts.length >= 2) {
+    // Take first letter of first name and first letter of last name
+    initials = nameParts[0].charAt(0).toUpperCase() + nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+  } else if (nameParts.length === 1) {
+    // If only one name, take first two letters
+    initials = nameParts[0].substring(0, 2).toUpperCase();
+  }
+
+  // Generate sequential number based on localStorage
+  const todayKey = `expediente_count_${dateStr}_${initials}`;
+  const currentCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
+  localStorage.setItem(todayKey, currentCount.toString());
+  
+  const sequential = String(currentCount).padStart(2, '0');
+
+  return `${dateStr}${initials}${sequential}`;
+};
+
 // Helper functions for localStorage
 const loadDoctorInfoFromStorage = (): DoctorInfo => {
   try {
@@ -82,7 +116,16 @@ const App: React.FC = () => {
   }, []);
 
   const handlePatientInfoChange = useCallback((field: keyof PatientInfo, value: string) => {
-    setPatientInfo(prev => ({ ...prev, [field]: value }));
+    setPatientInfo(prev => {
+      const newPatientInfo = { ...prev, [field]: value };
+      
+      // Auto-generate patient ID when name is entered
+      if (field === 'name' && value.trim() !== '') {
+        newPatientInfo.patientId = generatePatientId(value);
+      }
+      
+      return newPatientInfo;
+    });
   }, []);
 
   const handleDoctorInfoChange = useCallback((field: keyof DoctorInfo, value: string) => {
@@ -240,6 +283,7 @@ const App: React.FC = () => {
             onGeneralNotesChange={handleGeneralNotesChange}
             nextAppointment={nextAppointment}
             onNextAppointmentChange={handleNextAppointmentChange}
+            onGeneratePatientId={generatePatientId}
             onExportAndSave={handleExportAndSave} 
             onExportPdfOnly={handleExportPdfOnly} 
             isGeneratingPdf={isGeneratingPdf}
