@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { PatientInfo, MedicationItem, DoctorInfo, PrescriptionData } from './types';
+import { PatientInfo, MedicationItem, DoctorInfo, PrescriptionData, WellkittSupplement } from './types';
 import PrescriptionForm from './components/PrescriptionForm';
 import PrescriptionPreview from './components/PrescriptionPreview';
 import { generatePdf } from './services/pdfService';
@@ -95,6 +95,7 @@ const App: React.FC = () => {
   });
   const [doctorInfo, setDoctorInfo] = useState<DoctorInfo>(loadDoctorInfoFromStorage());
   const [medications, setMedications] = useState<MedicationItem[]>([]);
+  const [supplements, setSupplements] = useState<WellkittSupplement[]>([]);
   const [generalNotes, setGeneralNotes] = useState<string>('');
   const [nextAppointment, setNextAppointment] = useState<string>('');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
@@ -111,6 +112,7 @@ const App: React.FC = () => {
       patientId: ''
     });
     setMedications([]);
+    setSupplements([]);
     setGeneralNotes('');
     setNextAppointment('');
   }, []);
@@ -153,6 +155,20 @@ const App: React.FC = () => {
     setMedications(prev => prev.filter(med => med.id !== id));
   }, []);
 
+  const handleAddSupplement = useCallback((supplement: WellkittSupplement) => {
+    setSupplements(prev => [...prev, supplement]);
+  }, []);
+
+  const handleUpdateSupplement = useCallback((id: string, updatedSupplement: WellkittSupplement) => {
+    setSupplements(prev => 
+      prev.map(supp => supp.id === id ? updatedSupplement : supp)
+    );
+  }, []);
+
+  const handleRemoveSupplement = useCallback((id: string) => {
+    setSupplements(prev => prev.filter(supp => supp.id !== id));
+  }, []);
+
   const handleGeneralNotesChange = useCallback((value: string) => {
     setGeneralNotes(value);
   }, []);
@@ -176,16 +192,17 @@ const App: React.FC = () => {
       patient: patientInfo,
       doctor: doctorInfo,
       medications: medications,
+      supplements: supplements,
       generalNotes: generalNotes,
       nextAppointment: nextAppointment,
       dateTime: getCurrentDateTimeFormatted(),
       prescriptionId: generatePrescriptionId(),
     };
-  }, [patientInfo, doctorInfo, medications, generalNotes, nextAppointment]);
+  }, [patientInfo, doctorInfo, medications, supplements, generalNotes, nextAppointment]);
 
   const handleExportPdfOnly = useCallback(async () => {
     const dataToPreview = currentPrescriptionData();
-     if (!dataToPreview.patient.name && !dataToPreview.doctor.name && dataToPreview.medications.length === 0) {
+     if (!dataToPreview.patient.name && !dataToPreview.doctor.name && dataToPreview.medications.length === 0 && dataToPreview.supplements.length === 0) {
         alert("Por favor, completa al menos algunos datos de la receta antes de exportar.");
         return;
     }
@@ -212,7 +229,7 @@ const App: React.FC = () => {
     }
 
     const dataToSave = currentPrescriptionData();
-    if (!dataToSave.patient.name && !dataToSave.doctor.name && dataToSave.medications.length === 0) {
+    if (!dataToSave.patient.name && !dataToSave.doctor.name && dataToSave.medications.length === 0 && dataToSave.supplements.length === 0) {
         alert("Por favor, completa al menos algunos datos de la receta antes de exportar/guardar.");
         return;
     }
@@ -250,10 +267,11 @@ const App: React.FC = () => {
     }
   }, [currentPrescriptionData, clearPatientInfo]); 
 
-  const previewDisplayData: PrescriptionData | null = (patientInfo.name || patientInfo.age || patientInfo.dob || patientInfo.patientId || doctorInfo.name || medications.length > 0 || generalNotes || nextAppointment || doctorInfo.professionalID || doctorInfo.clinicEmail) ? {
+  const previewDisplayData: PrescriptionData | null = (patientInfo.name || patientInfo.age || patientInfo.dob || patientInfo.patientId || doctorInfo.name || medications.length > 0 || supplements.length > 0 || generalNotes || nextAppointment || doctorInfo.professionalID || doctorInfo.clinicEmail) ? {
     patient: patientInfo,
     doctor: doctorInfo,
     medications: medications,
+    supplements: supplements,
     generalNotes: generalNotes,
     nextAppointment: nextAppointment,
     dateTime: getCurrentDateTimeFormatted(),
@@ -279,6 +297,10 @@ const App: React.FC = () => {
             onAddMedication={handleAddMedication}
             onUpdateMedication={handleUpdateMedication}
             onRemoveMedication={handleRemoveMedication}
+            supplements={supplements}
+            onAddSupplement={handleAddSupplement}
+            onUpdateSupplement={handleUpdateSupplement}
+            onRemoveSupplement={handleRemoveSupplement}
             generalNotes={generalNotes}
             onGeneralNotesChange={handleGeneralNotesChange}
             nextAppointment={nextAppointment}

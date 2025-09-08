@@ -17,7 +17,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
     );
   }
 
-  const { patient, doctor, medications, generalNotes, nextAppointment, dateTime, prescriptionId } = data;
+  const { patient, doctor, medications, supplements, generalNotes, nextAppointment, dateTime, prescriptionId } = data;
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   // Generate QR Code when prescription data changes
@@ -145,10 +145,29 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
               </div>
             ))}
           </div>
-        ) : (
-          <p className="text-sm text-gray-500 italic">No hay medicamentos listados.</p>
-        )}
+        ) : null}
       </section>
+
+      {/* Supplements Section */}
+      {supplements && supplements.length > 0 && (
+        <>
+          <section className="mb-4">
+            <div className="space-y-3">
+              {supplements.map((supplement, index) => (
+                <div key={supplement.id} className="p-3 border border-gray-300 rounded-md bg-gray-50">
+                  <p className="text-sm font-semibold text-gray-800 mb-2">{index + 1}. {supplement.name}</p>
+                  <div className="space-y-1 text-xs text-gray-600">
+                    <p><span className="font-medium">Marca:</span> {supplement.brand}</p>
+                    <p><span className="font-medium">Dosis:</span> {supplement.dosage || "N/D"}</p>
+                    <p><span className="font-medium">Duración:</span> {supplement.duration || "N/D"}</p>
+                    {supplement.instructions && <p><span className="font-medium">Instrucciones:</span> {supplement.instructions}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
 
       {/* General Notes and Next Appointment - Side by side */}
       {(generalNotes || nextAppointment) && (

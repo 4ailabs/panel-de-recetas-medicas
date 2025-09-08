@@ -1,6 +1,7 @@
 import React from 'react';
-import { PatientInfo, MedicationItem, DoctorInfo } from '../types';
+import { PatientInfo, MedicationItem, DoctorInfo, WellkittSupplement } from '../types';
 import MedicationInput from './MedicationInput';
+import WellkittSupplementSelector from './WellkittSupplementSelector';
 import Button from './Button';
 import PlusIcon from './icons/PlusIcon';
 import DownloadIcon from './icons/DownloadIcon';
@@ -14,6 +15,10 @@ interface PrescriptionFormProps {
   onAddMedication: () => void;
   onUpdateMedication: (id: string, field: keyof Omit<MedicationItem, 'id'>, value: string) => void;
   onRemoveMedication: (id: string) => void;
+  supplements: WellkittSupplement[];
+  onAddSupplement: (supplement: WellkittSupplement) => void;
+  onUpdateSupplement: (id: string, updatedSupplement: WellkittSupplement) => void;
+  onRemoveSupplement: (id: string) => void;
   generalNotes: string;
   onGeneralNotesChange: (value: string) => void;
   nextAppointment: string;
@@ -34,6 +39,10 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   onAddMedication,
   onUpdateMedication,
   onRemoveMedication,
+  supplements,
+  onAddSupplement,
+  onUpdateSupplement,
+  onRemoveSupplement,
   generalNotes,
   onGeneralNotesChange,
   nextAppointment,
@@ -347,6 +356,15 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
             />
           ))}
         </div>
+      </section>
+
+      <section>
+        <WellkittSupplementSelector
+          supplements={supplements}
+          onAddSupplement={onAddSupplement}
+          onUpdateSupplement={onUpdateSupplement}
+          onRemoveSupplement={onRemoveSupplement}
+        />
       </section>
 
       <section>

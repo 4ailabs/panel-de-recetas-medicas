@@ -13,6 +13,17 @@ export interface MedicationItem {
   instructions: string;
 }
 
+export interface WellkittSupplement {
+  id: string;
+  name: string;
+  brand: string;
+  dosage: string;
+  duration: string;
+  instructions: string;
+  category: string;
+  presentation?: string;
+}
+
 export interface DoctorInfo {
   name: string;
   clinicName: string;
@@ -30,6 +41,7 @@ export interface PrescriptionData {
   patient: PatientInfo;
   doctor: DoctorInfo;
   medications: MedicationItem[];
+  supplements: WellkittSupplement[];
   generalNotes: string;
   nextAppointment?: string; // Next appointment text (e.g., "En una semana", "En 15 días")
   dateTime: string; // Changed from 'date' to 'dateTime'

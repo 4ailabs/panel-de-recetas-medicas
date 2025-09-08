@@ -92,6 +92,15 @@ export const savePrescriptionToAirtable = async (
         duracion: med.duration,
         instrucciones: med.instructions
     }))), 
+    'Suplementos_Naturales': prescriptionData.supplements ? JSON.stringify(prescriptionData.supplements.map(supp => ({
+        nombre: supp.name,
+        marca: supp.brand,
+        categoria: supp.category,
+        dosis: supp.dosage,
+        duracion: supp.duration,
+        instrucciones: supp.instructions,
+        presentacion: supp.presentation
+    }))) : undefined,
     'Notas_Generales': prescriptionData.generalNotes,
     'Proxima_Cita': prescriptionData.nextAppointment,
   };
