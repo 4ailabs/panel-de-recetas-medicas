@@ -5,9 +5,11 @@ import PrescriptionForm from './components/PrescriptionForm';
 import PrescriptionPreview from './components/PrescriptionPreview';
 import PatientHistory from './components/PatientHistory';
 import PrescriptionDetail from './components/PrescriptionDetail';
+import NotificationContainer from './components/NotificationContainer';
 import { generatePdf } from './services/pdfService';
 import { supabaseService } from './services/supabaseService'; // Import Supabase service
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
+import { useNotifications } from './hooks/useNotifications'; 
 
 // Application configuration
 // All data is now stored in Supabase - no Airtable dependency
@@ -93,7 +95,9 @@ const saveDoctorInfoToStorage = (doctorInfo: DoctorInfo) => {
 };
 
 const App: React.FC = () => {
-  const [patientInfo, setPatientInfo] = useState<PatientInfo>({ 
+  const { notifications, removeNotification, showSuccess, showError, showWarning } = useNotifications();
+  
+  const [patientInfo, setPatientInfo] = useState<PatientInfo>({
     name: '',
     age: '',
     dob: '',
@@ -223,16 +227,16 @@ const App: React.FC = () => {
     setIsGeneratingPdf(true);
     const fileName = dataToPreview.patient.name ? `Receta-${dataToPreview.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
 
-    try {
-      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
-      alert('Receta exportada a PDF exitosamente.');
-      clearPatientInfo();
-    } catch(e) {
-      console.error("Error durante la generación del PDF:", e);
-      // La alerta de error ya es manejada por pdfService
-    } finally {
-      setIsGeneratingPdf(false);
-    }
+      try {
+        await generatePdf(PREVIEW_ELEMENT_ID, fileName);
+        showSuccess('PDF Exportado', 'La receta se ha exportado exitosamente.');
+        clearPatientInfo();
+      } catch(e) {
+        console.error("Error durante la generación del PDF:", e);
+        showError('Error de Exportación', 'Ocurrió un error al generar el PDF. Revisa la consola para más detalles.');
+      } finally {
+        setIsGeneratingPdf(false);
+      }
   }, [currentPrescriptionData, clearPatientInfo]);
 
   const handleExportAndSave = useCallback(async () => {
@@ -254,15 +258,15 @@ const App: React.FC = () => {
       const supabaseSuccess = await supabaseService.savePrescription(dataToSave);
 
       if (supabaseSuccess) {
-        alert('✅ Receta exportada a PDF y guardada en Supabase exitosamente.');
+        showSuccess('Receta Guardada', 'La receta se ha exportado y guardado exitosamente en la base de datos.');
         clearPatientInfo();
       } else {
-        alert('⚠️ Error al guardar en Supabase. Revisa la consola para más detalles.');
+        showError('Error al Guardar', 'No se pudo guardar la receta en la base de datos. Revisa la consola para más detalles.');
         clearPatientInfo();
       }
     } catch(e) {
       console.error("Error durante el proceso de exportación o guardado:", e);
-      alert("Error durante la exportación/guardado. Revisa la consola para más detalles.");
+      showError('Error General', 'Ocurrió un error durante la exportación o guardado. Revisa la consola para más detalles.');
     } finally {
       setIsGeneratingPdf(false);
       setIsSavingToAirtable(false);
@@ -328,14 +332,14 @@ const App: React.FC = () => {
       );
 
       if (success) {
-        alert('✅ Corrección guardada exitosamente. La receta original se mantiene para auditoría.');
+        showSuccess('Corrección Guardada', 'La corrección se ha guardado exitosamente. La receta original se mantiene para auditoría.');
         handleCancelEdit();
       } else {
-        alert('⚠️ Error al guardar la corrección. Revisa la consola.');
+        showError('Error de Corrección', 'No se pudo guardar la corrección. Revisa la consola para más detalles.');
       }
     } catch (error) {
       console.error("Error durante la corrección:", error);
-      alert("Error durante la corrección. Revisa la consola para más detalles.");
+      showError('Error de Corrección', 'Ocurrió un error durante la corrección. Revisa la consola para más detalles.');
     } finally {
       setIsGeneratingPdf(false);
       setIsSavingToAirtable(false);
@@ -451,6 +455,12 @@ const App: React.FC = () => {
       <footer className="text-center mt-12 py-6 border-t border-gray-300">
         <p className="text-sm text-neutral">&copy; {new Date().getFullYear()} Panel de Recetas Médicas. 4 ailabs.</p>
       </footer>
+      
+      {/* Notification Container */}
+      <NotificationContainer
+        notifications={notifications}
+        onRemoveNotification={removeNotification}
+      />
     </div>
   );
 };
