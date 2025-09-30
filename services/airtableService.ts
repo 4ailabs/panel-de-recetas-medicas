@@ -147,7 +147,7 @@ export const savePrescriptionToAirtable = async (
         return false;
       }
       
-      console.log(`✅ Receta guardada en Airtable exitosamente (intento ${attempt})`);
+      console.log(`Receta guardada en Airtable exitosamente (intento ${attempt})`);
       return true;
       
     } catch (error) {

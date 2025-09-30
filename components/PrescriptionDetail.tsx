@@ -88,7 +88,7 @@ const PrescriptionDetail: React.FC<PrescriptionDetailProps> = ({
         {/* Información del doctor */}
         <div className="bg-gray-50 p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">
-            👨‍⚕️ Información del Doctor
+            Información del Doctor
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

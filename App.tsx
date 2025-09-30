@@ -5,7 +5,7 @@ import PrescriptionForm from './components/PrescriptionForm';
 import PrescriptionPreview from './components/PrescriptionPreview';
 import PatientHistory from './components/PatientHistory';
 import PrescriptionDetail from './components/PrescriptionDetail';
-import { generateNativePdf } from './services/pdfNativeService';
+import { generatePdf } from './services/pdfService';
 import { supabaseService } from './services/supabaseService'; // Import Supabase service
 import { v4 as uuidv4 } from 'uuid'; 
 
@@ -224,13 +224,12 @@ const App: React.FC = () => {
     const fileName = dataToPreview.patient.name ? `Receta-${dataToPreview.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
 
     try {
-      // Use native PDF generation instead of html2canvas
-      await generateNativePdf(dataToPreview, fileName);
+      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
       alert('Receta exportada a PDF exitosamente.');
       clearPatientInfo();
     } catch(e) {
       console.error("Error durante la generación del PDF:", e);
-      alert("Ocurrió un error al generar el PDF. Por favor, revisa la consola para más detalles.");
+      // La alerta de error ya es manejada por pdfService
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -247,8 +246,7 @@ const App: React.FC = () => {
     const fileName = dataToSave.patient.name ? `Receta-${dataToSave.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
 
     try {
-      // Use native PDF generation instead of html2canvas
-      await generateNativePdf(dataToSave, fileName);
+      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
       setIsGeneratingPdf(false);
       setIsSavingToAirtable(true);
 
@@ -320,8 +318,7 @@ const App: React.FC = () => {
     setIsSavingToAirtable(true);
 
     try {
-      // Use native PDF generation instead of html2canvas
-      await generateNativePdf(dataToSave, fileName);
+      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
       setIsGeneratingPdf(false);
 
       // Save correction with reference to original

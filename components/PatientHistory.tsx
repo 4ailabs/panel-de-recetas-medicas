@@ -95,18 +95,18 @@ const PatientHistory: React.FC<PatientHistoryProps> = ({ onBackToForm, onViewPre
       const success = await supabaseService.deletePatient(selectedPatient.patientId);
       
       if (success) {
-        alert('✅ Paciente eliminado exitosamente junto con todas sus recetas.');
+        alert('Paciente eliminado exitosamente junto con todas sus recetas.');
         // Reset the view
         setSelectedPatient(null);
         setPatientPrescriptions([]);
         setSearchQuery('');
         setSearchResults([]);
       } else {
-        alert('❌ Error al eliminar el paciente. Revisa la consola para más detalles.');
+        alert('Error al eliminar el paciente. Revisa la consola para más detalles.');
       }
     } catch (error) {
       console.error('Error deleting patient:', error);
-      alert('❌ Error inesperado al eliminar el paciente.');
+      alert('Error inesperado al eliminar el paciente.');
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);
@@ -123,17 +123,17 @@ const PatientHistory: React.FC<PatientHistoryProps> = ({ onBackToForm, onViewPre
       const success = await supabaseService.deletePrescription(prescriptionId);
       
       if (success) {
-        alert('✅ Receta eliminada exitosamente.');
+        alert('Receta eliminada exitosamente.');
         // Reload prescriptions for the current patient
         if (selectedPatient) {
           loadPatientPrescriptions(selectedPatient.patientId);
         }
       } else {
-        alert('❌ Error al eliminar la receta. Revisa la consola para más detalles.');
+        alert('Error al eliminar la receta. Revisa la consola para más detalles.');
       }
     } catch (error) {
       console.error('Error deleting prescription:', error);
-      alert('❌ Error inesperado al eliminar la receta.');
+      alert('Error inesperado al eliminar la receta.');
     }
   };
 
@@ -382,7 +382,7 @@ const PatientHistory: React.FC<PatientHistoryProps> = ({ onBackToForm, onViewPre
             
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-red-800">
-                ⚠️ <strong>Advertencia:</strong> Esta acción eliminará permanentemente:
+                <strong>Advertencia:</strong> Esta acción eliminará permanentemente:
               </p>
               <ul className="text-sm text-red-700 mt-2 ml-4 list-disc">
                 <li>El registro del paciente</li>

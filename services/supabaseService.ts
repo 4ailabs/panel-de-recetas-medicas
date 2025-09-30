@@ -184,31 +184,31 @@ export class SupabaseService {
    */
   async savePrescription(prescriptionData: PrescriptionData): Promise<boolean> {
     try {
-      console.log('🔍 Starting savePrescription with data:', prescriptionData);
+      console.log('Starting savePrescription with data:', prescriptionData);
       
       // Start a transaction-like operation
       
       // 1. Save doctor
-      console.log('👨‍⚕️ Saving doctor...');
+      console.log('Saving doctor...');
       const doctorId = await this.saveDoctor(prescriptionData.doctor);
       if (!doctorId) {
-        console.error('❌ Failed to save doctor');
+        console.error('Failed to save doctor');
         throw new Error('Failed to save doctor');
       }
-      console.log('✅ Doctor saved with ID:', doctorId);
+      console.log('Doctor saved with ID:', doctorId);
 
       // 2. Save patient
       console.log('👤 Saving patient...');
       const patientId = await this.savePatient(prescriptionData.patient, doctorId);
       if (!patientId) {
-        console.error('❌ Failed to save patient');
+        console.error('Failed to save patient');
         throw new Error('Failed to save patient');
       }
-      console.log('✅ Patient saved with ID:', patientId);
+      console.log('Patient saved with ID:', patientId);
 
       // 3. Save prescription
-      console.log('📋 Saving prescription...');
-      console.log('📋 Prescription data:', {
+      console.log('Saving prescription...');
+      console.log('Prescription data:', {
         prescription_id: prescriptionData.prescriptionId,
         patient_id: patientId,
         doctor_id: doctorId,
@@ -231,16 +231,16 @@ export class SupabaseService {
         .single();
 
       if (prescriptionError) {
-        console.error('❌ Prescription error:', prescriptionError);
+        console.error('Prescription error:', prescriptionError);
         throw new Error(`Failed to save prescription: ${prescriptionError.message}`);
       }
       
       if (!prescription) {
-        console.error('❌ No prescription data returned');
+        console.error('No prescription data returned');
         throw new Error('Failed to save prescription: No data returned');
       }
       
-      console.log('✅ Prescription saved with ID:', prescription.id);
+      console.log('Prescription saved with ID:', prescription.id);
 
       // 4. Save medications
       if (prescriptionData.medications.length > 0) {
@@ -285,7 +285,7 @@ export class SupabaseService {
         }
       }
 
-      console.log('✅ Prescription saved to Supabase successfully');
+      console.log('Prescription saved to Supabase successfully');
       return true;
 
     } catch (error) {
@@ -319,7 +319,7 @@ export class SupabaseService {
         return false;
       }
 
-      console.log('✅ SOAP note saved successfully');
+      console.log('SOAP note saved successfully');
       return true;
     } catch (error) {
       console.error('Error in saveSOAPNote:', error);
@@ -541,7 +541,7 @@ export class SupabaseService {
    */
   async deletePatient(patientId: string): Promise<boolean> {
     try {
-      console.log('🗑️ Starting deletion of patient:', patientId);
+      console.log('Starting deletion of patient:', patientId);
       
       // 1. First, find the patient by patient_id (expediente)
       const { data: patient, error: patientFetchError } = await supabase
@@ -551,16 +551,16 @@ export class SupabaseService {
         .single();
 
       if (patientFetchError) {
-        console.error('❌ Error fetching patient:', patientFetchError);
+        console.error('Error fetching patient:', patientFetchError);
         throw patientFetchError;
       }
 
       if (!patient) {
-        console.error('❌ Patient not found');
+        console.error('Patient not found');
         throw new Error('Patient not found');
       }
 
-      console.log('👤 Found patient with DB ID:', patient.id);
+      console.log('Found patient with DB ID:', patient.id);
       
       // 2. Get all prescriptions for this patient using the DB ID
       const { data: prescriptions, error: prescriptionsError } = await supabase
@@ -569,11 +569,11 @@ export class SupabaseService {
         .eq('patient_id', patient.id);
 
       if (prescriptionsError) {
-        console.error('❌ Error fetching prescriptions:', prescriptionsError);
+        console.error('Error fetching prescriptions:', prescriptionsError);
         throw prescriptionsError;
       }
 
-      console.log('📋 Found prescriptions to delete:', prescriptions?.length || 0);
+      console.log('Found prescriptions to delete:', prescriptions?.length || 0);
 
       // 2. Delete prescription medications for each prescription
       if (prescriptions && prescriptions.length > 0) {
@@ -586,7 +586,7 @@ export class SupabaseService {
           .in('prescription_id', prescriptionIds);
 
         if (medicationsError) {
-          console.error('❌ Error deleting medications:', medicationsError);
+          console.error('Error deleting medications:', medicationsError);
           throw medicationsError;
         }
 
@@ -597,7 +597,7 @@ export class SupabaseService {
           .in('prescription_id', prescriptionIds);
 
         if (supplementsError) {
-          console.error('❌ Error deleting supplements:', supplementsError);
+          console.error('Error deleting supplements:', supplementsError);
           throw supplementsError;
         }
 
@@ -608,7 +608,7 @@ export class SupabaseService {
           .in('prescription_id', prescriptionIds);
 
         if (soapError) {
-          console.error('❌ Error deleting SOAP notes:', soapError);
+          console.error('Error deleting SOAP notes:', soapError);
           throw soapError;
         }
 
@@ -619,11 +619,11 @@ export class SupabaseService {
           .in('id', prescriptionIds);
 
         if (prescriptionsDeleteError) {
-          console.error('❌ Error deleting prescriptions:', prescriptionsDeleteError);
+          console.error('Error deleting prescriptions:', prescriptionsDeleteError);
           throw prescriptionsDeleteError;
         }
 
-        console.log('✅ Deleted prescriptions and related data');
+        console.log('Deleted prescriptions and related data');
       }
 
       // 3. Delete the patient using the DB ID
@@ -633,14 +633,14 @@ export class SupabaseService {
         .eq('id', patient.id);
 
       if (patientError) {
-        console.error('❌ Error deleting patient:', patientError);
+        console.error('Error deleting patient:', patientError);
         throw patientError;
       }
 
-      console.log('✅ Patient deleted successfully');
+      console.log('Patient deleted successfully');
       return true;
     } catch (error) {
-      console.error('❌ Error in deletePatient:', error);
+      console.error('Error in deletePatient:', error);
       return false;
     }
   }
@@ -650,7 +650,7 @@ export class SupabaseService {
    */
   async deletePrescription(prescriptionId: string): Promise<boolean> {
     try {
-      console.log('🗑️ Starting deletion of prescription:', prescriptionId);
+      console.log('Starting deletion of prescription:', prescriptionId);
       
       // 1. First, find the prescription by prescription_id (RX-xxxxx)
       const { data: prescription, error: prescriptionFetchError } = await supabase
@@ -660,16 +660,16 @@ export class SupabaseService {
         .single();
 
       if (prescriptionFetchError) {
-        console.error('❌ Error fetching prescription:', prescriptionFetchError);
+        console.error('Error fetching prescription:', prescriptionFetchError);
         throw prescriptionFetchError;
       }
 
       if (!prescription) {
-        console.error('❌ Prescription not found');
+        console.error('Prescription not found');
         throw new Error('Prescription not found');
       }
 
-      console.log('📋 Found prescription with DB ID:', prescription.id);
+      console.log('Found prescription with DB ID:', prescription.id);
       
       // 2. Delete prescription medications using the DB ID
       const { error: medicationsError } = await supabase
@@ -678,7 +678,7 @@ export class SupabaseService {
         .eq('prescription_id', prescription.id);
 
       if (medicationsError) {
-        console.error('❌ Error deleting medications:', medicationsError);
+        console.error('Error deleting medications:', medicationsError);
         throw medicationsError;
       }
 
@@ -689,7 +689,7 @@ export class SupabaseService {
         .eq('prescription_id', prescription.id);
 
       if (supplementsError) {
-        console.error('❌ Error deleting supplements:', supplementsError);
+        console.error('Error deleting supplements:', supplementsError);
         throw supplementsError;
       }
 
@@ -700,7 +700,7 @@ export class SupabaseService {
         .eq('prescription_id', prescription.id);
 
       if (soapError) {
-        console.error('❌ Error deleting SOAP notes:', soapError);
+        console.error('Error deleting SOAP notes:', soapError);
         throw soapError;
       }
 
@@ -711,14 +711,14 @@ export class SupabaseService {
         .eq('id', prescription.id);
 
       if (prescriptionError) {
-        console.error('❌ Error deleting prescription:', prescriptionError);
+        console.error('Error deleting prescription:', prescriptionError);
         throw prescriptionError;
       }
 
-      console.log('✅ Prescription deleted successfully');
+      console.log('Prescription deleted successfully');
       return true;
     } catch (error) {
-      console.error('❌ Error in deletePrescription:', error);
+      console.error('Error in deletePrescription:', error);
       return false;
     }
   }
