@@ -1,7 +1,8 @@
 import React from 'react';
-import { PatientInfo, MedicationItem, DoctorInfo, WellkittSupplement } from '../types';
+import { PatientInfo, MedicationItem, DoctorInfo, WellkittSupplement, SOAPData } from '../types';
 import MedicationInput from './MedicationInput';
 import WellkittSupplementSelector from './WellkittSupplementSelector';
+import SOAPForm from './SOAPForm';
 import Button from './Button';
 import PlusIcon from './icons/PlusIcon';
 import DownloadIcon from './icons/DownloadIcon';
@@ -24,10 +25,14 @@ interface PrescriptionFormProps {
   nextAppointment: string;
   onNextAppointmentChange: (value: string) => void;
   onGeneratePatientId: (patientName: string) => string;
+  soapNote: SOAPData | null;
+  onSoapNoteChange: (soapData: SOAPData | null) => void;
   onExportAndSave: () => void; 
   onExportPdfOnly: () => void; 
   isGeneratingPdf: boolean;
   isSavingToAirtable: boolean;
+  isEditing?: boolean;
+  editingPrescription?: PrescriptionWithIds | null;
 }
 
 const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
@@ -48,10 +53,14 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   nextAppointment,
   onNextAppointmentChange,
   onGeneratePatientId,
+  soapNote,
+  onSoapNoteChange,
   onExportAndSave,
   onExportPdfOnly, 
   isGeneratingPdf,
-  isSavingToAirtable
+  isSavingToAirtable,
+  isEditing = false,
+  editingPrescription = null
 }) => {
   
   const handlePatientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,8 +102,9 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   const getExportAndSaveButtonText = () => {
     if (isGeneratingPdf && isSavingToAirtable) return 'Generando PDF y Guardando...';
     if (isGeneratingPdf) return 'Generando PDF...'; 
-    if (isSavingToAirtable) return 'Guardando Receta...';
-    return 'Exportar PDF y Guardar Receta';
+    if (isSavingToAirtable) return 'Guardando en Base de Datos...';
+    if (isEditing) return 'Guardar Corrección';
+    return 'Exportar PDF y Guardar en Base de Datos';
   };
 
   const getExportOnlyButtonText = () => {
@@ -364,6 +374,13 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
           onAddSupplement={onAddSupplement}
           onUpdateSupplement={onUpdateSupplement}
           onRemoveSupplement={onRemoveSupplement}
+        />
+      </section>
+
+      <section>
+        <SOAPForm
+          soapNote={soapNote}
+          onSoapNoteChange={onSoapNoteChange}
         />
       </section>
 

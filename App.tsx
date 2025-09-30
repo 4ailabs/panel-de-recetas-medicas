@@ -1,17 +1,23 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { PatientInfo, MedicationItem, DoctorInfo, PrescriptionData, WellkittSupplement } from './types';
+import { FileText } from 'lucide-react';
+import { PatientInfo, MedicationItem, DoctorInfo, PrescriptionData, WellkittSupplement, PrescriptionWithIds, SOAPData } from './types';
 import PrescriptionForm from './components/PrescriptionForm';
 import PrescriptionPreview from './components/PrescriptionPreview';
-import { generatePdf } from './services/pdfService';
-import { savePrescriptionToAirtable } from './services/airtableService'; // Import Airtable service
+import PatientHistory from './components/PatientHistory';
+import PrescriptionDetail from './components/PrescriptionDetail';
+import { generateNativePdf } from './services/pdfNativeService';
+import { supabaseService } from './services/supabaseService'; // Import Supabase service
 import { v4 as uuidv4 } from 'uuid'; 
 
-// --- IMPORTANT: REPLACE WITH YOUR ACTUAL AIRTABLE CREDENTIALS ---
-// These should ideally be environment variables in a real application.
-const AIRTABLE_API_KEY = 'patIzNNnbvXsS2OiG.f4383a609b51eae5d6e27c57632e7ade2782dc4d62ababc6d976cfb35971b788'; // Starts with 'pat...'
-const AIRTABLE_BASE_ID = 'appYbBijylq9Xo1o4'; // Starts with 'app...'
-const AIRTABLE_TABLE_NAME = 'Datos'; // Or your specific table name
-// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// Application configuration
+// All data is now stored in Supabase - no Airtable dependency
+
+// Generate current date and time formatted for PostgreSQL
+const getCurrentDateTimeFormatted = (): string => {
+  const now = new Date();
+  // Return ISO string format that PostgreSQL understands
+  return now.toISOString();
+};
 
 // Generate unique prescription ID
 const generatePrescriptionId = (): string => {
@@ -98,8 +104,17 @@ const App: React.FC = () => {
   const [supplements, setSupplements] = useState<WellkittSupplement[]>([]);
   const [generalNotes, setGeneralNotes] = useState<string>('');
   const [nextAppointment, setNextAppointment] = useState<string>('');
+  const [soapNote, setSoapNote] = useState<SOAPData | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
   const [isSavingToAirtable, setIsSavingToAirtable] = useState<boolean>(false); 
+  
+  // Navigation state
+  const [currentView, setCurrentView] = useState<'form' | 'history' | 'detail'>('form');
+  const [selectedPrescription, setSelectedPrescription] = useState<PrescriptionWithIds | null>(null);
+  
+  // Edit state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingPrescription, setEditingPrescription] = useState<PrescriptionWithIds | null>(null);
 
   const PREVIEW_ELEMENT_ID = 'prescription-preview-area-content';
 
@@ -115,6 +130,7 @@ const App: React.FC = () => {
     setSupplements([]);
     setGeneralNotes('');
     setNextAppointment('');
+    setSoapNote(null);
   }, []);
 
   const handlePatientInfoChange = useCallback((field: keyof PatientInfo, value: string) => {
@@ -177,15 +193,11 @@ const App: React.FC = () => {
     setNextAppointment(value);
   }, []);
 
-  const getCurrentDateTimeFormatted = (): string => {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    const hours = String(today.getHours()).padStart(2, '0');
-    const minutes = String(today.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  };
+  const handleSoapNoteChange = useCallback((soapData: SOAPData | null) => {
+    setSoapNote(soapData);
+  }, []);
+
+  // Function getCurrentDateTimeFormatted is defined globally above (line 16)
   
   const currentPrescriptionData = useCallback((): PrescriptionData => {
     return {
@@ -195,10 +207,11 @@ const App: React.FC = () => {
       supplements: supplements,
       generalNotes: generalNotes,
       nextAppointment: nextAppointment,
+      soapNote: soapNote,
       dateTime: getCurrentDateTimeFormatted(),
       prescriptionId: generatePrescriptionId(),
     };
-  }, [patientInfo, doctorInfo, medications, supplements, generalNotes, nextAppointment]);
+  }, [patientInfo, doctorInfo, medications, supplements, generalNotes, nextAppointment, soapNote]);
 
   const handleExportPdfOnly = useCallback(async () => {
     const dataToPreview = currentPrescriptionData();
@@ -209,25 +222,21 @@ const App: React.FC = () => {
 
     setIsGeneratingPdf(true);
     const fileName = dataToPreview.patient.name ? `Receta-${dataToPreview.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
-    
+
     try {
-      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
+      // Use native PDF generation instead of html2canvas
+      await generateNativePdf(dataToPreview, fileName);
       alert('Receta exportada a PDF exitosamente.');
       clearPatientInfo();
     } catch(e) {
       console.error("Error durante la generación del PDF:", e);
-      // La alerta de error ya es manejada por pdfService
+      alert("Ocurrió un error al generar el PDF. Por favor, revisa la consola para más detalles.");
     } finally {
       setIsGeneratingPdf(false);
     }
   }, [currentPrescriptionData, clearPatientInfo]);
 
   const handleExportAndSave = useCallback(async () => {
-    if (AIRTABLE_API_KEY === 'YOUR_PERSONAL_ACCESS_TOKEN_HERE' || AIRTABLE_BASE_ID === 'YOUR_BASE_ID_HERE') {
-        alert('Por favor, configura tus credenciales de Airtable en App.tsx antes de guardar.');
-        return;
-    }
-
     const dataToSave = currentPrescriptionData();
     if (!dataToSave.patient.name && !dataToSave.doctor.name && dataToSave.medications.length === 0 && dataToSave.supplements.length === 0) {
         alert("Por favor, completa al menos algunos datos de la receta antes de exportar/guardar.");
@@ -236,36 +245,105 @@ const App: React.FC = () => {
 
     setIsGeneratingPdf(true);
     const fileName = dataToSave.patient.name ? `Receta-${dataToSave.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
-    
+
     try {
-      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
-      setIsGeneratingPdf(false); 
-      setIsSavingToAirtable(true); 
+      // Use native PDF generation instead of html2canvas
+      await generateNativePdf(dataToSave, fileName);
+      setIsGeneratingPdf(false);
+      setIsSavingToAirtable(true);
 
-      const airtableSuccess = await savePrescriptionToAirtable(
-        dataToSave,
-        AIRTABLE_API_KEY,
-        AIRTABLE_BASE_ID,
-        AIRTABLE_TABLE_NAME
-      );
+      // Save to Supabase only
+      const supabaseSuccess = await supabaseService.savePrescription(dataToSave);
 
-      if (airtableSuccess) {
-        alert('Receta exportada a PDF y guardada en Airtable exitosamente.');
+      if (supabaseSuccess) {
+        alert('✅ Receta exportada a PDF y guardada en Supabase exitosamente.');
         clearPatientInfo();
       } else {
-        alert('Receta exportada a PDF, pero hubo un error al guardarla en Airtable.');
+        alert('⚠️ Error al guardar en Supabase. Revisa la consola para más detalles.');
         clearPatientInfo();
       }
     } catch(e) {
       console.error("Error durante el proceso de exportación o guardado:", e);
-       if (!isSavingToAirtable) { 
-         // Alert for PDF generation error is handled by pdfService, no need to double alert
-       }
+      alert("Error durante la exportación/guardado. Revisa la consola para más detalles.");
     } finally {
       setIsGeneratingPdf(false);
       setIsSavingToAirtable(false);
     }
   }, [currentPrescriptionData, clearPatientInfo]); 
+
+  // Navigation functions
+  const handleViewHistory = useCallback(() => {
+    setCurrentView('history');
+  }, []);
+
+  const handleBackToForm = useCallback(() => {
+    setCurrentView('form');
+    setSelectedPrescription(null);
+  }, []);
+
+  const handleViewPrescription = useCallback((prescription: PrescriptionWithIds) => {
+    setSelectedPrescription(prescription);
+    setCurrentView('detail');
+  }, []);
+
+  // Edit functions
+  const handleEditPrescription = useCallback((prescription: PrescriptionWithIds) => {
+    setEditingPrescription(prescription);
+    setIsEditing(true);
+    
+    // Load prescription data into form
+    setPatientInfo(prescription.patient);
+    setDoctorInfo(prescription.doctor);
+    setMedications(prescription.medications);
+    setSupplements(prescription.supplements);
+    setGeneralNotes(prescription.generalNotes || '');
+    setNextAppointment(prescription.nextAppointment || '');
+    
+    setCurrentView('form');
+  }, []);
+
+  const handleCancelEdit = useCallback(() => {
+    setIsEditing(false);
+    setEditingPrescription(null);
+    clearPatientInfo();
+  }, [clearPatientInfo]);
+
+  const handleSaveCorrection = useCallback(async () => {
+    if (!editingPrescription) return;
+
+    const dataToSave = currentPrescriptionData();
+    const fileName = dataToSave.patient.name ?
+      `Receta-Corregida-${dataToSave.patient.name.replace(/\s+/g, '_')}.pdf` :
+      'Receta-Corregida.pdf';
+
+    setIsGeneratingPdf(true);
+    setIsSavingToAirtable(true);
+
+    try {
+      // Use native PDF generation instead of html2canvas
+      await generateNativePdf(dataToSave, fileName);
+      setIsGeneratingPdf(false);
+
+      // Save correction with reference to original
+      const success = await supabaseService.savePrescriptionCorrection(
+        dataToSave,
+        editingPrescription.id!
+      );
+
+      if (success) {
+        alert('✅ Corrección guardada exitosamente. La receta original se mantiene para auditoría.');
+        handleCancelEdit();
+      } else {
+        alert('⚠️ Error al guardar la corrección. Revisa la consola.');
+      }
+    } catch (error) {
+      console.error("Error durante la corrección:", error);
+      alert("Error durante la corrección. Revisa la consola para más detalles.");
+    } finally {
+      setIsGeneratingPdf(false);
+      setIsSavingToAirtable(false);
+    }
+  }, [editingPrescription, currentPrescriptionData, handleCancelEdit]);
 
   const previewDisplayData: PrescriptionData | null = (patientInfo.name || patientInfo.age || patientInfo.dob || patientInfo.patientId || doctorInfo.name || medications.length > 0 || supplements.length > 0 || generalNotes || nextAppointment || doctorInfo.professionalID || doctorInfo.clinicEmail) ? {
     patient: patientInfo,
@@ -279,11 +357,62 @@ const App: React.FC = () => {
   } : null;
 
 
+  // Render different views based on currentView state
+  if (currentView === 'history') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 p-4 sm:p-6 lg:p-8">
+        <PatientHistory 
+          onBackToForm={handleBackToForm}
+          onViewPrescription={handleViewPrescription}
+          onEditPrescription={handleEditPrescription}
+        />
+      </div>
+    );
+  }
+
+  if (currentView === 'detail' && selectedPrescription) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 p-4 sm:p-6 lg:p-8">
+        <PrescriptionDetail 
+          prescription={selectedPrescription}
+          onBack={handleBackToForm}
+          onEdit={handleEditPrescription}
+        />
+      </div>
+    );
+  }
+
+  // Default form view
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 p-4 sm:p-6 lg:p-8">
       <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-primary">Panel de Recetas Médicas</h1>
-        <p className="text-lg text-neutral mt-2">Sistema de Consulta V1</p>
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold text-primary">
+              {isEditing ? 'Corrigiendo Receta Médica' : 'Panel de Recetas Médicas'}
+            </h1>
+            <p className="text-lg text-neutral mt-2">
+              {isEditing ? `Editando receta: ${editingPrescription?.prescriptionId}` : 'Sistema de Consulta V1'}
+            </p>
+          </div>
+          <div className="flex gap-3">
+            {isEditing && (
+              <button
+                onClick={handleCancelEdit}
+                className="px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium flex items-center gap-2"
+              >
+                Cancelar Edición
+              </button>
+            )}
+            <button
+              onClick={handleViewHistory}
+              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2"
+            >
+              <FileText className="h-5 w-5" />
+              Ver Historial
+            </button>
+          </div>
+        </div>
       </header>
       
       <main className="container mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -306,10 +435,14 @@ const App: React.FC = () => {
             nextAppointment={nextAppointment}
             onNextAppointmentChange={handleNextAppointmentChange}
             onGeneratePatientId={generatePatientId}
-            onExportAndSave={handleExportAndSave} 
+            soapNote={soapNote}
+            onSoapNoteChange={handleSoapNoteChange}
+            onExportAndSave={isEditing ? handleSaveCorrection : handleExportAndSave} 
             onExportPdfOnly={handleExportPdfOnly} 
             isGeneratingPdf={isGeneratingPdf}
             isSavingToAirtable={isSavingToAirtable}
+            isEditing={isEditing}
+            editingPrescription={editingPrescription}
           />
         </div>
         

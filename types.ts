@@ -44,6 +44,33 @@ export interface PrescriptionData {
   supplements: WellkittSupplement[];
   generalNotes: string;
   nextAppointment?: string; // Next appointment text (e.g., "En una semana", "En 15 días")
+  soapNote?: SOAPData; // SOAP note for medical records
   dateTime: string; // Changed from 'date' to 'dateTime'
   prescriptionId: string; // Unique prescription ID/folio
+}
+
+// SOAP Note structure for medical notes
+export interface SOAPData {
+  subjective: {
+    chief_complaint?: string;
+    current_medications?: string;
+  };
+  objective: {
+    vital_signs?: string;
+    key_findings?: string;
+  };
+  assessment: {
+    diagnosis?: string;
+  };
+  plan: {
+    treatment?: string;
+  };
+}
+
+// Extended prescription data with database IDs
+export interface PrescriptionWithIds extends PrescriptionData {
+  id?: string;
+  patientDbId?: string;
+  doctorDbId?: string;
+  soapNote?: SOAPData;
 }
