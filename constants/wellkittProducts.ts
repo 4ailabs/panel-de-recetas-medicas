@@ -31,6 +31,9 @@ export const wellkittProducts: WellkittProduct[] = [
   { id: "SN19", name: "Resverasor", brand: "Soria Natural", ingredients: ["Resveratrol (extracto de uva negra)"], benefits: ["Antioxidante", "salud cardiovascular", "antiinflamatorio", "neuroprotector"], category: "Sistema Inmune" },
   { id: "SN20", name: "Analis L-Triptófano", brand: "Soria Natural", ingredients: ["L-Lisina", "L-Triptófano"], benefits: ["Precursor de serotonina y melatonina", "regula estado de ánimo"], category: "Anti-Estrés y Sueño", presentation: "60 cápsulas de 500 mg" },
   { id: "SN21", name: "Carnilis", brand: "Soria Natural", ingredients: ["L-Carnitina", "Nitrato de cromo"], benefits: ["Transporte de ácidos grasos", "mejora metabolismo energético", "reduce fatiga"], category: "Energía y Rendimiento", presentation: "60 cápsulas de 500 mg" },
+  { id: "SN22", name: "Pro-vit", brand: "Soria Natural", ingredients: ["Zapote blanco (Casimiroa edulis)", "Olivo (Olea europaea)", "Espino blanco (Crataegus monogyna)", "Melisa (Melissa officinalis)", "Maíz estilos (Zea mays)", "Galphimia glauca"], benefits: ["Equilibra hormonas", "calma el sistema nervioso", "mejora el estado de ánimo"], category: "Regulación Hormonal", presentation: "Frasco gotero de 50 ml" },
+  { id: "SN23", name: "Sorivid", brand: "Soria Natural", ingredients: ["Vitamina A", "Vitamina B12", "Vitamina C", "Vitamina D", "Vitamina E"], benefits: ["Inmunidad", "visión", "piel", "metabolismo celular"], category: "Vitaminas", presentation: "Cápsulas" },
+  { id: "SN24", name: "Totalvid 4", brand: "Soria Natural", ingredients: ["Vitamina C", "Vitamina E", "Vitamina B6", "Vitamina A", "Vitamina B12", "PABA", "Colina", "Hierro", "Zinc", "Inositol", "Niacina", "Manganeso", "Fluoruro"], benefits: ["Complejo multivitamínico completo", "antioxidante", "energía", "inmunidad", "piel", "sistema nervioso"], category: "Vitaminas", presentation: "Cápsulas" },
 
   // Biofito
   { id: "BF01", name: "Hepacryl", brand: "Biofito", ingredients: ["Cardo mariano", "Alcachofa", "Boldo", "Diente de león", "Cúrcuma"], benefits: ["Protege hígado", "regenera células hepáticas", "desintoxica"], category: "Detox y Antioxidantes", presentation: "Bote 90 comprimidos 750 mg" },
@@ -57,6 +60,21 @@ export const wellkittProducts: WellkittProduct[] = [
   { id: "BF22", name: "Fat-less", brand: "Biofito", ingredients: ["Tamarindo malabar", "Alcachofa", "Té verde", "Cocolmeca", "Jamaica", "Tejocote", "Cardo mariano"], benefits: ["Acelera metabolismo", "quema grasa", "diurético"], category: "Control de Peso", presentation: "Bote 90 comprimidos 750 mg" },
   { id: "BF23", name: "Té Verde", brand: "Biofito", ingredients: ["Camellia sinensis"], benefits: ["Potente antioxidante", "acelera metabolismo", "mejora concentración"], category: "Control de Peso", presentation: "Frasco gotero de 50 ml" },
   { id: "BF24", name: "Ojo de Gallina", brand: "Biofito", ingredients: ["Galphimia glauca"], benefits: ["Antihistamínico", "calma nervios", "acelera metabolismo"], category: "Control de Peso", presentation: "Frasco 50 ml" },
+  { id: "BF25", name: "Pro-vit", brand: "Biofito", ingredients: ["Zapote blanco (Casimiroa edulis)", "Olivo (Olea europaea)", "Espino blanco (Crataegus monogyna)", "Melisa (Melissa officinalis)", "Maíz estilos (Zea mays)", "Galphimia glauca"], benefits: ["Equilibra hormonas", "calma el sistema nervioso", "mejora el estado de ánimo"], category: "Regulación Hormonal", presentation: "Frasco gotero de 50 ml" },
+
+  // Aminoácidos
+  { id: "AA01", name: "Analis Aminoácido Glicina 130", brand: "Soria Natural", ingredients: ["Glicina"], benefits: ["Neurotransmisor inhibidor", "favorece sueño profundo", "síntesis de colágeno", "modula inflamación", "glucogénesis", "antioxidante", "protege sistema nervioso"], category: "Aminoácidos", presentation: "Polvo 130g" },
+  { id: "AA02", name: "Analis Aminoácido Glicina 400", brand: "Soria Natural", ingredients: ["Glicina"], benefits: ["Neurotransmisor inhibidor", "favorece sueño profundo", "síntesis de colágeno", "modula inflamación", "glucogénesis", "antioxidante", "protege sistema nervioso"], category: "Aminoácidos", presentation: "Polvo 400g" },
+  { id: "AA03", name: "Analis Aminoácido L-Arginina", brand: "Soria Natural", ingredients: ["L-Arginina", "L-Lisina"], benefits: ["Vasodilatador natural", "mejora circulación", "inmunomodulador", "precursor óxido nítrico", "estimula hormona del crecimiento"], category: "Aminoácidos", presentation: "60 cápsulas 500mg" },
+  { id: "AA04", name: "Analis Aminoácido L-Prolina", brand: "Soria Natural", ingredients: ["L-Prolina", "L-Lisina"], benefits: ["Cofactor formación de colágeno", "elasticidad de tejidos", "reparación articulaciones", "piel y vasos sanguíneos"], category: "Aminoácidos", presentation: "60 cápsulas 500mg" },
+  { id: "AA05", name: "Analis Neurotransmisores", brand: "Soria Natural", ingredients: ["L-Lisina", "L-Triptófano", "Glicina", "L-Arginina"], benefits: ["Apoyo neuromodulador", "equilibrio emocional", "ayuda insomnio", "ansiedad", "fatiga mental y estrés"], category: "Aminoácidos", presentation: "60 cápsulas 500mg" },
+  { id: "AA06", name: "Cronovida", brand: "Soria Natural", ingredients: ["Ácido glutámico", "Glicina", "Arginina", "Fenilalanina", "L-Lisina", "L-Metionina", "Ácido fólico", "Colina"], benefits: ["Regulación neuroendocrina y ciclo sueño-vigilia", "modulación neurotransmisores", "regeneración hepática", "soporte metabólico y mental"], category: "Aminoácidos", presentation: "Polvo 260g" },
+  { id: "AA07", name: "Deprelat", brand: "Soria Natural", ingredients: ["L-Arginina", "L-Triptófano"], benefits: ["Regulador estado de ánimo", "coadyuvante cuadros depresivos leves", "síndrome premenstrual y ansiedad"], category: "Aminoácidos", presentation: "60 cápsulas 500mg" },
+  { id: "AA08", name: "Glicam 130", brand: "Soria Natural", ingredients: ["Glicina", "L-Lisina"], benefits: ["Estimula síntesis colágeno", "modula respuesta inmunitaria", "favorece sueño profundo", "repara tejidos conectivos"], category: "Aminoácidos", presentation: "Polvo 130g" },
+  { id: "AA09", name: "Glicam 400", brand: "Soria Natural", ingredients: ["Glicina", "L-Lisina"], benefits: ["Estimula síntesis colágeno", "modula respuesta inmunitaria", "favorece sueño profundo", "repara tejidos conectivos"], category: "Aminoácidos", presentation: "Polvo 400g" },
+  { id: "AA10", name: "Lisam 200", brand: "Soria Natural", ingredients: ["L-Lisina"], benefits: ["Favorece síntesis proteínas", "absorción calcio", "crecimiento óseo", "regeneración tisular", "antiviral contra herpes simplex"], category: "Aminoácidos", presentation: "200 cápsulas 500mg" },
+  { id: "AA11", name: "Lisam 60", brand: "Soria Natural", ingredients: ["L-Lisina"], benefits: ["Favorece síntesis proteínas", "absorción calcio", "crecimiento óseo", "regeneración tisular", "antiviral contra herpes simplex"], category: "Aminoácidos", presentation: "60 cápsulas 500mg" },
+  { id: "AA12", name: "Melis", brand: "Soria Natural", ingredients: ["L-Lisina", "L-Metionina"], benefits: ["Acción antiviral", "desintoxicante hepático", "mejora metabolismo lipídico", "regeneración tejidos"], category: "Aminoácidos", presentation: "60 cápsulas 500mg" },
 ];
 
 // Categorías disponibles para filtrado
@@ -71,7 +89,10 @@ export const wellkittCategories = [
   "Articulaciones y Movilidad",
   "Detox y Antioxidantes",
   "Metabolismo",
-  "Control de Peso"
+  "Control de Peso",
+  "Regulación Hormonal",
+  "Vitaminas",
+  "Aminoácidos"
 ];
 
 // Función para obtener productos por categoría
