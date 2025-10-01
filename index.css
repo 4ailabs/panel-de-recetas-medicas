@@ -1,0 +1,92 @@
+/* Force light theme for medical application */
+/* This ensures the app always displays in light mode regardless of system settings */
+
+/* Override any dark mode preferences */
+html {
+  color-scheme: light only !important;
+}
+
+body {
+  background-color: #F9FAFB !important;
+  color: #111827 !important;
+}
+
+/* Force all elements to use light theme */
+* {
+  color-scheme: light only !important;
+}
+
+/* Override dark mode media queries */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #F9FAFB !important;
+    color: #111827 !important;
+  }
+  
+  /* Ensure all text elements remain dark */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select {
+    color: #111827 !important;
+  }
+  
+  /* Ensure form elements remain visible */
+  input, textarea, select {
+    background-color: #FFFFFF !important;
+    color: #111827 !important;
+    border-color: #D1D5DB !important;
+  }
+  
+  /* Ensure buttons remain visible */
+  button {
+    background-color: #3B82F6 !important;
+    color: #FFFFFF !important;
+  }
+  
+  /* Ensure cards and containers remain light */
+  .bg-white {
+    background-color: #FFFFFF !important;
+  }
+  
+  .bg-gray-50, .bg-gray-100 {
+    background-color: #F9FAFB !important;
+  }
+  
+  /* Ensure borders remain visible */
+  .border, .border-gray-300 {
+    border-color: #D1D5DB !important;
+  }
+}
+
+/* Additional overrides for common Tailwind classes */
+.bg-white {
+  background-color: #FFFFFF !important;
+}
+
+.text-gray-900 {
+  color: #111827 !important;
+}
+
+.text-gray-800 {
+  color: #1F2937 !important;
+}
+
+.text-gray-700 {
+  color: #374151 !important;
+}
+
+.text-gray-600 {
+  color: #4B5563 !important;
+}
+
+/* Ensure prescription preview area remains white */
+.prescription-preview-area {
+  background-color: #FFFFFF !important;
+}
+
+/* Force notification components to remain visible */
+.bg-green-50, .bg-blue-50, .bg-yellow-50, .bg-red-50 {
+  background-color: inherit !important;
+}
+
+.text-green-800, .text-blue-800, .text-yellow-800, .text-red-800 {
+  color: inherit !important;
+}
