@@ -1,0 +1,698 @@
+[
+  {
+    "REF": "10399",
+    "Nombre": "ACI-VIT CAPS",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10374",
+    "Nombre": "Acidux",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10338",
+    "Nombre": "Ajo gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10183",
+    "Nombre": "Alcachofa Ext",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10031",
+    "Nombre": "Alfalfa cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10032",
+    "Nombre": "Alga Espirulina cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10033",
+    "Nombre": "Anti-B cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10333",
+    "Nombre": "Anxifem",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10363",
+    "Nombre": "Artrox",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10034",
+    "Nombre": "Barbasco cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10430",
+    "Nombre": "Barbasco gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10385",
+    "Nombre": "Boldo extracto",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10000",
+    "Nombre": "Cancerina gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10185",
+    "Nombre": "Cardomariano gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10239",
+    "Nombre": "Cartilago de Tiburon",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10186",
+    "Nombre": "Castaña de Indias gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10236",
+    "Nombre": "Chaparro Amargo gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10197",
+    "Nombre": "Cola de Caballo",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10035",
+    "Nombre": "Colex cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10241",
+    "Nombre": "Colix",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10001",
+    "Nombre": "Cuachalalate caps",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10214",
+    "Nombre": "Curcuma caps",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10002",
+    "Nombre": "Curcuma gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10369",
+    "Nombre": "Damiana de california Extracto",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10187",
+    "Nombre": "Diente de Leon gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10188",
+    "Nombre": "Dren-vit gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10003",
+    "Nombre": "Enebro gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10009",
+    "Nombre": "Epilobio gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10388",
+    "Nombre": "Equinacea +VC",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10215",
+    "Nombre": "Equinacea cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10240",
+    "Nombre": "Equinacea gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10010",
+    "Nombre": "Espino Blanco gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10036",
+    "Nombre": "Fat-Less cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10011",
+    "Nombre": "Fem Vit gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10037",
+    "Nombre": "Fenogreco cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10012",
+    "Nombre": "Fenogreco gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10013",
+    "Nombre": "Galphimia Glauca gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10014",
+    "Nombre": "Gayuba gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10189",
+    "Nombre": "Ginkgo",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10038",
+    "Nombre": "Gluvit cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10023",
+    "Nombre": "Hamamelis",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10341",
+    "Nombre": "Harpagofito gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10039",
+    "Nombre": "Hepacryl cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10015",
+    "Nombre": "Hierba de San Juan Gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10016",
+    "Nombre": "Hierba del Sapo gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10190",
+    "Nombre": "Hinojo gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10017",
+    "Nombre": "Immune Herb gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10041",
+    "Nombre": "In-So cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10046",
+    "Nombre": "Jarabe Balsamo de 3 Damianas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10008",
+    "Nombre": "Jarabe Sauco-vit",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10040",
+    "Nombre": "Jengibre",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10071",
+    "Nombre": "Keloz",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10332",
+    "Nombre": "Barbasco cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10336",
+    "Nombre": "Laxil gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10042",
+    "Nombre": "Levadura de Cerveza cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10191",
+    "Nombre": "Maca Peruana",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10018",
+    "Nombre": "Malabar gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10019",
+    "Nombre": "Mapurite gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10368",
+    "Nombre": "Matlali",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10020",
+    "Nombre": "Melissa gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10349",
+    "Nombre": "Milenrama extracto",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10022",
+    "Nombre": "Moringa gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10192",
+    "Nombre": "Nervit",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10347",
+    "Nombre": "Ortiga Extracto",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10345",
+    "Nombre": "Palo azul gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10198",
+    "Nombre": "Pelo de Elote gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10364",
+    "Nombre": "pervit",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10238",
+    "Nombre": "Polvo Cal-Bil",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10047",
+    "Nombre": "Polvo Cal-Ren",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10337",
+    "Nombre": "Pro-vit gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10235",
+    "Nombre": "Ren-VIt gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10024",
+    "Nombre": "Salvia gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10025",
+    "Nombre": "Sayumel gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10242",
+    "Nombre": "Sedanlex Caps",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10371",
+    "Nombre": "Semilla Fenogreeco",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10237",
+    "Nombre": "Té del Corazon",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10026",
+    "Nombre": "Té Verde gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10027",
+    "Nombre": "Tomillo gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10043",
+    "Nombre": "Uña de Gato Peruana cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10028",
+    "Nombre": "Uña de gato peruana gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10403",
+    "Nombre": "Uricol",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10044",
+    "Nombre": "Valeriana cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10029",
+    "Nombre": "Valeriana gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10030",
+    "Nombre": "Vari Vit gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10045",
+    "Nombre": "Varilex cápsulas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10334",
+    "Nombre": "Vermi-vit",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  },
+  {
+    "REF": "10342",
+    "Nombre": "Zapote blanco gotas",
+    "Categoria": "BIOFITO",
+    "Estante": null,
+    "Bodega": null,
+    "Total": null
+  }
+]
