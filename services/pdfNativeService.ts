@@ -10,12 +10,6 @@ const CONTENT_WIDTH = PAGE_WIDTH - (MARGIN * 2);
 const FOOTER_HEIGHT = 45; // Reserved space for footer
 const USABLE_HEIGHT = PAGE_HEIGHT - MARGIN - FOOTER_HEIGHT;
 
-// Colors
-const PRIMARY_COLOR = '#1e40af'; // Blue
-const SECONDARY_COLOR = '#64748b'; // Gray
-const ACCENT_COLOR = '#3b82f6'; // Light blue
-const BORDER_COLOR = '#e5e7eb';
-
 // Helper function to load image as base64
 const loadImageAsBase64 = async (url: string): Promise<string | null> => {
   try {
@@ -219,36 +213,9 @@ const drawHeader = async (
 
 // Draw patient information box
 const drawPatientInfo = (pdf: jsPDF, data: PrescriptionData, yPos: number): number => {
-  const boxHeight = 22;
   const boxY = yPos;
 
-  // Blue left border
-  pdf.setFillColor(59, 130, 246); // Accent color
-  pdf.rect(MARGIN, boxY, 2, boxHeight, 'F');
-
-  // Light blue background
-  pdf.setFillColor(239, 246, 255); // Very light blue
-  pdf.rect(MARGIN + 2, boxY, CONTENT_WIDTH - 2, boxHeight, 'F');
-
-  // Border
-  pdf.setDrawColor(191, 219, 254); // Light blue border
-  pdf.setLineWidth(0.3);
-  pdf.rect(MARGIN, boxY, CONTENT_WIDTH, boxHeight, 'S');
-
-  yPos += 5;
-
-  // Title
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(8);
-  pdf.setTextColor(30, 64, 175);
-  pdf.text('Información del Paciente', MARGIN + 5, yPos);
-  yPos += 5;
-
-  // Patient data
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(30, 58, 138); // Dark blue
-
+  // Calculate patient data first
   const patientData = [];
   if (data.patient.name) {
     patientData.push(`Nombre: ${data.patient.name}`);
@@ -263,6 +230,37 @@ const drawPatientInfo = (pdf: jsPDF, data: PrescriptionData, yPos: number): numb
     patientData.push(`Nacimiento: ${formatDOB(data.patient.dob)}`);
   }
 
+  const boxHeight = 10 + (patientData.length * 4);
+
+  // Draw boxes FIRST
+  // Blue left border
+  pdf.setFillColor(59, 130, 246); // Accent color
+  pdf.rect(MARGIN, boxY, 2, boxHeight, 'F');
+
+  // Light blue background
+  pdf.setFillColor(239, 246, 255); // Very light blue
+  pdf.rect(MARGIN + 2, boxY, CONTENT_WIDTH - 2, boxHeight, 'F');
+
+  // Border
+  pdf.setDrawColor(191, 219, 254); // Light blue border
+  pdf.setLineWidth(0.3);
+  pdf.rect(MARGIN, boxY, CONTENT_WIDTH, boxHeight, 'S');
+
+  // NOW draw text on top
+  yPos += 5;
+
+  // Title
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(8);
+  pdf.setTextColor(30, 64, 175);
+  pdf.text('Información del Paciente', MARGIN + 5, yPos);
+  yPos += 5;
+
+  // Patient data
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.setTextColor(30, 58, 138); // Dark blue
+
   patientData.forEach(item => {
     pdf.text(item, MARGIN + 5, yPos);
     yPos += 4;
@@ -276,7 +274,7 @@ const drawRxTitle = (pdf: jsPDF, yPos: number): number => {
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(16);
   pdf.setTextColor(30, 64, 175);
-  pdf.text('℞  Receta', MARGIN, yPos);
+  pdf.text('Rx  Receta', MARGIN, yPos);
   return yPos + 8;
 };
 
