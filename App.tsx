@@ -6,7 +6,7 @@ import PrescriptionPreview from './components/PrescriptionPreview';
 import PatientHistory from './components/PatientHistory';
 import PrescriptionDetail from './components/PrescriptionDetail';
 import NotificationContainer from './components/NotificationContainer';
-import { generatePdf } from './services/pdfService';
+import { generateNativePdf } from './services/pdfNativeService';
 import { supabaseService } from './services/supabaseService'; // Import Supabase service
 import { v4 as uuidv4 } from 'uuid';
 import { useNotifications } from './hooks/useNotifications'; 
@@ -228,7 +228,7 @@ const App: React.FC = () => {
     const fileName = dataToPreview.patient.name ? `Receta-${dataToPreview.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
 
       try {
-        await generatePdf(PREVIEW_ELEMENT_ID, fileName);
+        await generateNativePdf(dataToPreview, fileName);
         showSuccess('PDF Exportado', 'La receta se ha exportado exitosamente.');
         clearPatientInfo();
       } catch(e) {
@@ -250,7 +250,7 @@ const App: React.FC = () => {
     const fileName = dataToSave.patient.name ? `Receta-${dataToSave.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
 
     try {
-      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
+      await generateNativePdf(dataToSave, fileName);
       setIsGeneratingPdf(false);
       setIsSavingToAirtable(true);
 
@@ -322,7 +322,7 @@ const App: React.FC = () => {
     setIsSavingToAirtable(true);
 
     try {
-      await generatePdf(PREVIEW_ELEMENT_ID, fileName);
+      await generateNativePdf(dataToSave, fileName);
       setIsGeneratingPdf(false);
 
       // Save correction with reference to original

@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { PrescriptionData } from '../types';
 import QRCode from 'qrcode';
 
@@ -262,105 +263,81 @@ const drawRxTitle = (pdf: jsPDF, yPos: number): number => {
   return yPos + 8;
 };
 
-// Draw medication box
-const drawMedication = (
-  pdf: jsPDF,
-  medication: any,
-  index: number,
-  yPos: number
-): number => {
-  const startY = yPos;
-
-  // Background box
-  pdf.setFillColor(249, 250, 251); // Very light gray
-  const boxHeight = 18; // Estimate, will adjust if needed
-
-  // Border
-  pdf.setDrawColor(229, 231, 235);
-  pdf.setLineWidth(0.3);
-
-  yPos += 4;
-
-  // Medication number and name
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor(31, 41, 55); // Dark gray
-  const nameText = `${index}. ${medication.name || 'Medicamento sin nombre'}`;
-  pdf.text(nameText, MARGIN + 3, yPos);
-  yPos += 5;
-
-  // Details
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(8);
-  pdf.setTextColor(75, 85, 99);
-
-  if (medication.dosage) {
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Dosis:', MARGIN + 3, yPos);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(medication.dosage, MARGIN + 15, yPos);
-    yPos += 4;
-  }
-
-  if (medication.duration) {
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Duración:', MARGIN + 3, yPos);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(medication.duration, MARGIN + 20, yPos);
-    yPos += 4;
-  }
-
-  if (medication.instructions) {
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Instrucciones:', MARGIN + 3, yPos);
-    yPos += 4;
-    pdf.setFont('helvetica', 'normal');
-    yPos = addWrappedText(pdf, medication.instructions, MARGIN + 3, yPos, CONTENT_WIDTH - 6, 4);
-  }
-
-  const finalBoxHeight = yPos - startY + 2;
-
-  // Draw the background box with actual height
-  pdf.setFillColor(249, 250, 251);
-  pdf.rect(MARGIN, startY, CONTENT_WIDTH, finalBoxHeight, 'FD');
-
-  return yPos + 3;
-};
-
-// Draw medications list
-const drawMedications = (
+// Draw medications and supplements using autotable for automatic pagination
+const drawMedicationsAndSupplements = (
   pdf: jsPDF,
   medications: any[],
-  yPos: number,
-  startIndex: number = 1
-): number => {
-  medications.forEach((med, idx) => {
-    // Check if we need a new page
-    if (yPos > USABLE_HEIGHT) {
-      pdf.addPage();
-      yPos = MARGIN;
-    }
-    yPos = drawMedication(pdf, med, startIndex + idx, yPos);
-  });
-  return yPos;
-};
-
-// Draw supplements list
-const drawSupplements = (
-  pdf: jsPDF,
   supplements: any[],
-  yPos: number,
-  startIndex: number
+  yPos: number
 ): number => {
-  supplements.forEach((supp, idx) => {
-    // Check if we need a new page
-    if (yPos > USABLE_HEIGHT) {
-      pdf.addPage();
-      yPos = MARGIN;
+  // Combine medications and supplements
+  const allItems = [
+    ...medications.map((med, idx) => ({ ...med, index: idx + 1 })),
+    ...supplements.map((supp, idx) => ({ ...supp, index: medications.length + idx + 1 }))
+  ];
+
+  if (allItems.length === 0) return yPos;
+
+  // Prepare table data
+  const tableData = allItems.map(item => {
+    let details = '';
+    if (item.dosage) {
+      details += `Dosis: ${item.dosage}\n`;
     }
-    yPos = drawMedication(pdf, supp, startIndex + idx, yPos);
+    if (item.duration) {
+      details += `Duración: ${item.duration}\n`;
+    }
+    if (item.instructions) {
+      details += `Instrucciones: ${item.instructions}`;
+    }
+
+    return [
+      item.index.toString(),
+      item.name || 'Sin nombre',
+      details.trim() || 'N/D'
+    ];
   });
-  return yPos;
+
+  // Use autoTable for automatic pagination
+  autoTable(pdf, {
+    startY: yPos,
+    head: [['#', 'Medicamento/Suplemento', 'Detalles']],
+    body: tableData,
+    theme: 'grid',
+    styles: {
+      fontSize: 8,
+      cellPadding: 3,
+      lineColor: [229, 231, 235],
+      lineWidth: 0.3,
+      textColor: [31, 41, 55],
+    },
+    headStyles: {
+      fillColor: [30, 64, 175],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      halign: 'center',
+    },
+    columnStyles: {
+      0: { cellWidth: 10, halign: 'center' },
+      1: { cellWidth: 60, fontStyle: 'bold' },
+      2: { cellWidth: 110, fontSize: 7 }
+    },
+    alternateRowStyles: {
+      fillColor: [249, 250, 251]
+    },
+    margin: { left: MARGIN, right: MARGIN },
+    didDrawPage: (data) => {
+      // Ensure footer is drawn on new pages
+      const pageHeight = pdf.internal.pageSize.height;
+      if (data.cursor && data.cursor.y > pageHeight - FOOTER_HEIGHT - 10) {
+        // Table continues on next page, footer will be added later
+      }
+    }
+  });
+
+  // Get final Y position after table
+  const finalY = (pdf as any).lastAutoTable.finalY || yPos;
+  return finalY + 5;
 };
 
 // Draw general notes and next appointment
@@ -582,16 +559,13 @@ export const generateNativePdf = async (
     // Draw Rx title
     yPos = drawRxTitle(pdf, yPos);
 
-    // Draw medications
-    if (data.medications.length > 0) {
-      yPos = drawMedications(pdf, data.medications, yPos);
-    }
-
-    // Draw supplements
-    if (data.supplements && data.supplements.length > 0) {
-      const startIndex = data.medications.length + 1;
-      yPos = drawSupplements(pdf, data.supplements, yPos, startIndex);
-    }
+    // Draw medications and supplements using autotable (handles pagination automatically)
+    yPos = drawMedicationsAndSupplements(
+      pdf,
+      data.medications || [],
+      data.supplements || [],
+      yPos
+    );
 
     // Draw notes and appointment
     yPos = drawNotesAndAppointment(pdf, data, yPos);
