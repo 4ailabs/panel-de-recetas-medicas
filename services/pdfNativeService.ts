@@ -1,5 +1,4 @@
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { PrescriptionData } from '../types';
 import QRCode from 'qrcode';
 
@@ -104,6 +103,16 @@ const formatDOB = (dobStr: string): string => {
   }
 };
 
+// Helper to get image dimensions
+const getImageDimensions = (base64: string): Promise<{width: number, height: number}> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.width, height: img.height });
+    img.onerror = reject;
+    img.src = base64;
+  });
+};
+
 // Draw header with logos and doctor info
 const drawHeader = async (
   pdf: jsPDF,
@@ -114,14 +123,18 @@ const drawHeader = async (
 
   // Load and draw logos
   if (data.doctor.logo1Url || data.doctor.logo2Url) {
-    const logoHeight = 15;
+    const maxLogoHeight = 15; // Max height in mm
     const logoY = yPos;
 
     if (data.doctor.logo1Url) {
       const logo1 = await loadImageAsBase64(data.doctor.logo1Url);
       if (logo1) {
         try {
-          pdf.addImage(logo1, 'PNG', MARGIN, logoY, 30, logoHeight);
+          const dimensions = await getImageDimensions(logo1);
+          const aspectRatio = dimensions.width / dimensions.height;
+          const logoHeight = maxLogoHeight;
+          const logoWidth = logoHeight * aspectRatio;
+          pdf.addImage(logo1, 'PNG', MARGIN, logoY, logoWidth, logoHeight);
         } catch (error) {
           console.error('Error adding logo1:', error);
         }
@@ -132,14 +145,18 @@ const drawHeader = async (
       const logo2 = await loadImageAsBase64(data.doctor.logo2Url);
       if (logo2) {
         try {
-          pdf.addImage(logo2, 'PNG', PAGE_WIDTH - MARGIN - 30, logoY, 30, logoHeight);
+          const dimensions = await getImageDimensions(logo2);
+          const aspectRatio = dimensions.width / dimensions.height;
+          const logoHeight = maxLogoHeight;
+          const logoWidth = logoHeight * aspectRatio;
+          pdf.addImage(logo2, 'PNG', PAGE_WIDTH - MARGIN - logoWidth, logoY, logoWidth, logoHeight);
         } catch (error) {
           console.error('Error adding logo2:', error);
         }
       }
     }
 
-    yPos += logoHeight + 5;
+    yPos += maxLogoHeight + 5;
 
     // Horizontal line after logos
     pdf.setDrawColor(200, 200, 200);
@@ -263,7 +280,87 @@ const drawRxTitle = (pdf: jsPDF, yPos: number): number => {
   return yPos + 8;
 };
 
-// Draw medications and supplements using autotable for automatic pagination
+// Helper to estimate medication box height before drawing
+const estimateMedicationHeight = (pdf: jsPDF, medication: any): number => {
+  let height = 4; // Initial padding
+  height += 5; // Name line
+
+  if (medication.dosage) height += 4;
+  if (medication.duration) height += 4;
+  if (medication.instructions) {
+    const lines = pdf.splitTextToSize(medication.instructions, CONTENT_WIDTH - 6);
+    height += 4 + (lines.length * 4);
+  }
+
+  height += 5; // Bottom padding
+  return height;
+};
+
+// Draw medication box
+const drawMedication = (
+  pdf: jsPDF,
+  medication: any,
+  index: number,
+  yPos: number
+): number => {
+  const startY = yPos;
+
+  // Background box
+  pdf.setFillColor(249, 250, 251); // Very light gray
+
+  // Border
+  pdf.setDrawColor(229, 231, 235);
+  pdf.setLineWidth(0.3);
+
+  yPos += 4;
+
+  // Medication number and name
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(31, 41, 55); // Dark gray
+  const nameText = `${index}. ${medication.name || 'Medicamento sin nombre'}`;
+  pdf.text(nameText, MARGIN + 3, yPos);
+  yPos += 5;
+
+  // Details
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(75, 85, 99);
+
+  if (medication.dosage) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Dosis:', MARGIN + 3, yPos);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(medication.dosage, MARGIN + 15, yPos);
+    yPos += 4;
+  }
+
+  if (medication.duration) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Duración:', MARGIN + 3, yPos);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(medication.duration, MARGIN + 20, yPos);
+    yPos += 4;
+  }
+
+  if (medication.instructions) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Instrucciones:', MARGIN + 3, yPos);
+    yPos += 4;
+    pdf.setFont('helvetica', 'normal');
+    yPos = addWrappedText(pdf, medication.instructions, MARGIN + 3, yPos, CONTENT_WIDTH - 6, 4);
+  }
+
+  const finalBoxHeight = yPos - startY + 2;
+
+  // Draw the background box with actual height
+  pdf.setFillColor(249, 250, 251);
+  pdf.rect(MARGIN, startY, CONTENT_WIDTH, finalBoxHeight, 'FD');
+
+  return yPos + 3;
+};
+
+// Draw medications and supplements with improved pagination
 const drawMedicationsAndSupplements = (
   pdf: jsPDF,
   medications: any[],
@@ -278,66 +375,22 @@ const drawMedicationsAndSupplements = (
 
   if (allItems.length === 0) return yPos;
 
-  // Prepare table data
-  const tableData = allItems.map(item => {
-    let details = '';
-    if (item.dosage) {
-      details += `Dosis: ${item.dosage}\n`;
-    }
-    if (item.duration) {
-      details += `Duración: ${item.duration}\n`;
-    }
-    if (item.instructions) {
-      details += `Instrucciones: ${item.instructions}`;
+  allItems.forEach((item) => {
+    // Pre-calculate height needed for this item
+    const estimatedHeight = estimateMedicationHeight(pdf, item);
+
+    // Check if we need a new page (with buffer for footer)
+    if (yPos + estimatedHeight > PAGE_HEIGHT - FOOTER_HEIGHT - 10) {
+      pdf.addPage();
+      yPos = MARGIN;
+      // Redraw Rx title on new page
+      yPos = drawRxTitle(pdf, yPos);
     }
 
-    return [
-      item.index.toString(),
-      item.name || 'Sin nombre',
-      details.trim() || 'N/D'
-    ];
+    yPos = drawMedication(pdf, item, item.index, yPos);
   });
 
-  // Use autoTable for automatic pagination
-  autoTable(pdf, {
-    startY: yPos,
-    head: [['#', 'Medicamento/Suplemento', 'Detalles']],
-    body: tableData,
-    theme: 'grid',
-    styles: {
-      fontSize: 8,
-      cellPadding: 3,
-      lineColor: [229, 231, 235],
-      lineWidth: 0.3,
-      textColor: [31, 41, 55],
-    },
-    headStyles: {
-      fillColor: [30, 64, 175],
-      textColor: [255, 255, 255],
-      fontStyle: 'bold',
-      halign: 'center',
-    },
-    columnStyles: {
-      0: { cellWidth: 10, halign: 'center' },
-      1: { cellWidth: 60, fontStyle: 'bold' },
-      2: { cellWidth: 110, fontSize: 7 }
-    },
-    alternateRowStyles: {
-      fillColor: [249, 250, 251]
-    },
-    margin: { left: MARGIN, right: MARGIN },
-    didDrawPage: (data) => {
-      // Ensure footer is drawn on new pages
-      const pageHeight = pdf.internal.pageSize.height;
-      if (data.cursor && data.cursor.y > pageHeight - FOOTER_HEIGHT - 10) {
-        // Table continues on next page, footer will be added later
-      }
-    }
-  });
-
-  // Get final Y position after table
-  const finalY = (pdf as any).lastAutoTable.finalY || yPos;
-  return finalY + 5;
+  return yPos;
 };
 
 // Draw general notes and next appointment
