@@ -304,20 +304,33 @@ const drawMedication = (
   yPos: number
 ): number => {
   const startY = yPos;
+  let tempY = yPos + 4;
 
-  // Background box
-  pdf.setFillColor(249, 250, 251); // Very light gray
+  // Calculate final height first
+  tempY += 5; // Name line
 
-  // Border
+  if (medication.dosage) tempY += 4;
+  if (medication.duration) tempY += 4;
+  if (medication.instructions) {
+    const lines = pdf.splitTextToSize(medication.instructions, CONTENT_WIDTH - 6);
+    tempY += 4 + (lines.length * 4);
+  }
+
+  const finalBoxHeight = tempY - startY + 2;
+
+  // Draw the background box FIRST
+  pdf.setFillColor(249, 250, 251);
   pdf.setDrawColor(229, 231, 235);
   pdf.setLineWidth(0.3);
+  pdf.rect(MARGIN, startY, CONTENT_WIDTH, finalBoxHeight, 'FD');
 
+  // NOW draw text on top
   yPos += 4;
 
   // Medication number and name
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
-  pdf.setTextColor(31, 41, 55); // Dark gray
+  pdf.setTextColor(31, 41, 55);
   const nameText = `${index}. ${medication.name || 'Medicamento sin nombre'}`;
   pdf.text(nameText, MARGIN + 3, yPos);
   yPos += 5;
@@ -350,12 +363,6 @@ const drawMedication = (
     pdf.setFont('helvetica', 'normal');
     yPos = addWrappedText(pdf, medication.instructions, MARGIN + 3, yPos, CONTENT_WIDTH - 6, 4);
   }
-
-  const finalBoxHeight = yPos - startY + 2;
-
-  // Draw the background box with actual height
-  pdf.setFillColor(249, 250, 251);
-  pdf.rect(MARGIN, startY, CONTENT_WIDTH, finalBoxHeight, 'FD');
 
   return yPos + 3;
 };
@@ -583,6 +590,8 @@ export const generateNativePdf = async (
   fileName: string = 'receta.pdf'
 ): Promise<void> => {
   try {
+    console.log('Starting PDF generation...', data);
+
     // Create PDF document
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -590,6 +599,8 @@ export const generateNativePdf = async (
       format: 'a4',
       compress: true,
     });
+
+    console.log('PDF document created');
 
     // Set document metadata
     pdf.setProperties({
@@ -625,10 +636,13 @@ export const generateNativePdf = async (
 
     // Draw footer on all pages
     const pageCount = pdf.getNumberOfPages();
+    console.log(`Drawing footer on ${pageCount} pages`);
     await drawFooter(pdf, data, pageCount);
 
     // Save the PDF
+    console.log('Saving PDF with filename:', fileName);
     pdf.save(fileName);
+    console.log('PDF saved successfully');
 
   } catch (error) {
     console.error('Error generating native PDF:', error);
