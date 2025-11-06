@@ -213,84 +213,92 @@ const drawHeader = async (
 
 // Draw patient information box
 const drawPatientInfo = (pdf: jsPDF, data: PrescriptionData, yPos: number): number => {
-  const boxY = yPos;
-
-  // Calculate patient data first
-  const patientData = [];
-  if (data.patient.name) {
-    patientData.push(`Nombre: ${data.patient.name}`);
-  }
-  if (data.patient.age) {
-    patientData.push(`Edad: ${data.patient.age} años`);
-  }
-  if (data.patient.patientId) {
-    patientData.push(`Expediente: ${data.patient.patientId}`);
-  }
-  if (data.patient.dob) {
-    patientData.push(`Nacimiento: ${formatDOB(data.patient.dob)}`);
-  }
-
-  const boxHeight = 10 + (patientData.length * 4);
-
-  // Draw boxes FIRST
-  // Blue left border
-  pdf.setFillColor(59, 130, 246); // Accent color
-  pdf.rect(MARGIN, boxY, 2, boxHeight, 'F');
-
-  // Light blue background
-  pdf.setFillColor(239, 246, 255); // Very light blue
-  pdf.rect(MARGIN + 2, boxY, CONTENT_WIDTH - 2, boxHeight, 'F');
-
-  // Border
-  pdf.setDrawColor(191, 219, 254); // Light blue border
-  pdf.setLineWidth(0.3);
-  pdf.rect(MARGIN, boxY, CONTENT_WIDTH, boxHeight, 'S');
-
-  // NOW draw text on top
-  yPos += 5;
-
   // Title
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(8);
-  pdf.setTextColor(30, 64, 175);
-  pdf.text('Información del Paciente', MARGIN + 5, yPos);
+  pdf.setFontSize(10);
+  pdf.setTextColor(50, 50, 50);
+  pdf.text('DATOS DEL PACIENTE', MARGIN, yPos);
+  yPos += 6;
+
+  // Thin line under title
+  pdf.setDrawColor(200, 200, 200);
+  pdf.setLineWidth(0.5);
+  pdf.line(MARGIN, yPos, PAGE_WIDTH - MARGIN, yPos);
   yPos += 5;
 
-  // Patient data
+  // Patient data in two columns
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(9);
-  pdf.setTextColor(30, 58, 138); // Dark blue
+  pdf.setTextColor(60, 60, 60);
 
-  patientData.forEach(item => {
-    pdf.text(item, MARGIN + 5, yPos);
-    yPos += 4;
-  });
+  const leftColumn = [];
+  const rightColumn = [];
 
-  return boxY + boxHeight + 6;
+  if (data.patient.name) {
+    leftColumn.push({ label: 'Nombre:', value: data.patient.name });
+  }
+  if (data.patient.age) {
+    leftColumn.push({ label: 'Edad:', value: `${data.patient.age} años` });
+  }
+  if (data.patient.patientId) {
+    rightColumn.push({ label: 'Expediente:', value: data.patient.patientId });
+  }
+  if (data.patient.dob) {
+    rightColumn.push({ label: 'F. Nacimiento:', value: formatDOB(data.patient.dob) });
+  }
+
+  const maxRows = Math.max(leftColumn.length, rightColumn.length);
+  const midPoint = PAGE_WIDTH / 2;
+
+  for (let i = 0; i < maxRows; i++) {
+    if (leftColumn[i]) {
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(leftColumn[i].label, MARGIN, yPos);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(leftColumn[i].value, MARGIN + 20, yPos);
+    }
+
+    if (rightColumn[i]) {
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(rightColumn[i].label, midPoint, yPos);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(rightColumn[i].value, midPoint + 28, yPos);
+    }
+
+    yPos += 5;
+  }
+
+  return yPos + 3;
 };
 
 // Draw Rx symbol and title
 const drawRxTitle = (pdf: jsPDF, yPos: number): number => {
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(16);
-  pdf.setTextColor(30, 64, 175);
-  pdf.text('Rx  Receta', MARGIN, yPos);
-  return yPos + 8;
+  pdf.setFontSize(12);
+  pdf.setTextColor(50, 50, 50);
+  pdf.text('PRESCRIPCIÓN MÉDICA', MARGIN, yPos);
+  yPos += 6;
+
+  // Thin line
+  pdf.setDrawColor(200, 200, 200);
+  pdf.setLineWidth(0.5);
+  pdf.line(MARGIN, yPos, PAGE_WIDTH - MARGIN, yPos);
+
+  return yPos + 5;
 };
 
 // Helper to estimate medication box height before drawing
 const estimateMedicationHeight = (pdf: jsPDF, medication: any): number => {
-  let height = 4; // Initial padding
-  height += 5; // Name line
+  let height = 5; // Name line
 
-  if (medication.dosage) height += 4;
-  if (medication.duration) height += 4;
+  if (medication.dosage) height += 4.5;
+  if (medication.duration) height += 4.5;
   if (medication.instructions) {
-    const lines = pdf.splitTextToSize(medication.instructions, CONTENT_WIDTH - 6);
-    height += 4 + (lines.length * 4);
+    const lines = pdf.splitTextToSize(medication.instructions, CONTENT_WIDTH - 12);
+    height += 4.5 + (lines.length * 4);
   }
 
-  height += 5; // Bottom padding
+  height += 6; // Separator line and padding
   return height;
 };
 
@@ -301,68 +309,48 @@ const drawMedication = (
   index: number,
   yPos: number
 ): number => {
-  const startY = yPos;
-  let tempY = yPos + 4;
-
-  // Calculate final height first
-  tempY += 5; // Name line
-
-  if (medication.dosage) tempY += 4;
-  if (medication.duration) tempY += 4;
-  if (medication.instructions) {
-    const lines = pdf.splitTextToSize(medication.instructions, CONTENT_WIDTH - 6);
-    tempY += 4 + (lines.length * 4);
-  }
-
-  const finalBoxHeight = tempY - startY + 2;
-
-  // Draw the background box FIRST
-  pdf.setFillColor(249, 250, 251);
-  pdf.setDrawColor(229, 231, 235);
-  pdf.setLineWidth(0.3);
-  pdf.rect(MARGIN, startY, CONTENT_WIDTH, finalBoxHeight, 'FD');
-
-  // NOW draw text on top
-  yPos += 4;
-
   // Medication number and name
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
-  pdf.setTextColor(31, 41, 55);
+  pdf.setTextColor(40, 40, 40);
   const nameText = `${index}. ${medication.name || 'Medicamento sin nombre'}`;
-  pdf.text(nameText, MARGIN + 3, yPos);
+  pdf.text(nameText, MARGIN, yPos);
   yPos += 5;
 
-  // Details
+  // Details with indent
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(8);
-  pdf.setTextColor(75, 85, 99);
+  pdf.setFontSize(9);
+  pdf.setTextColor(70, 70, 70);
+  const indent = MARGIN + 6;
 
   if (medication.dosage) {
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Dosis:', MARGIN + 3, yPos);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(medication.dosage, MARGIN + 15, yPos);
-    yPos += 4;
+    pdf.text(`• Dosis: ${medication.dosage}`, indent, yPos);
+    yPos += 4.5;
   }
 
   if (medication.duration) {
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Duración:', MARGIN + 3, yPos);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(medication.duration, MARGIN + 20, yPos);
-    yPos += 4;
+    pdf.text(`• Duración: ${medication.duration}`, indent, yPos);
+    yPos += 4.5;
   }
 
   if (medication.instructions) {
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Instrucciones:', MARGIN + 3, yPos);
-    yPos += 4;
-    pdf.setFont('helvetica', 'normal');
-    yPos = addWrappedText(pdf, medication.instructions, MARGIN + 3, yPos, CONTENT_WIDTH - 6, 4);
+    pdf.text('• Instrucciones:', indent, yPos);
+    yPos += 4.5;
+    const lines = pdf.splitTextToSize(medication.instructions, CONTENT_WIDTH - 12);
+    lines.forEach((line: string) => {
+      pdf.text(line, indent + 4, yPos);
+      yPos += 4;
+    });
   }
 
-  return yPos + 3;
+  // Light separator line
+  yPos += 2;
+  pdf.setDrawColor(220, 220, 220);
+  pdf.setLineWidth(0.3);
+  pdf.line(MARGIN, yPos, PAGE_WIDTH - MARGIN, yPos);
+  yPos += 4;
+
+  return yPos;
 };
 
 // Draw medications and supplements with improved pagination
@@ -588,8 +576,6 @@ export const generateNativePdf = async (
   fileName: string = 'receta.pdf'
 ): Promise<void> => {
   try {
-    console.log('Starting PDF generation...', data);
-
     // Create PDF document
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -597,8 +583,6 @@ export const generateNativePdf = async (
       format: 'a4',
       compress: true,
     });
-
-    console.log('PDF document created');
 
     // Set document metadata
     pdf.setProperties({
@@ -621,7 +605,7 @@ export const generateNativePdf = async (
     // Draw Rx title
     yPos = drawRxTitle(pdf, yPos);
 
-    // Draw medications and supplements using autotable (handles pagination automatically)
+    // Draw medications and supplements
     yPos = drawMedicationsAndSupplements(
       pdf,
       data.medications || [],
@@ -634,13 +618,10 @@ export const generateNativePdf = async (
 
     // Draw footer on all pages
     const pageCount = pdf.getNumberOfPages();
-    console.log(`Drawing footer on ${pageCount} pages`);
     await drawFooter(pdf, data, pageCount);
 
     // Save the PDF
-    console.log('Saving PDF with filename:', fileName);
     pdf.save(fileName);
-    console.log('PDF saved successfully');
 
   } catch (error) {
     console.error('Error generating native PDF:', error);
