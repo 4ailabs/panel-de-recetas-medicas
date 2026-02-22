@@ -27,10 +27,10 @@ interface PrescriptionFormProps {
   onGeneratePatientId: (patientName: string) => string;
   soapNote: SOAPData | null;
   onSoapNoteChange: (soapData: SOAPData | null) => void;
-  onExportAndSave: () => void; 
-  onExportPdfOnly: () => void; 
+  onExportAndSave: () => void;
+  onExportPdfOnly: () => void;
   isGeneratingPdf: boolean;
-  isSavingToAirtable: boolean;
+  isSavingToDatabase: boolean;
   isEditing?: boolean;
   editingPrescription?: PrescriptionWithIds | null;
 }
@@ -56,13 +56,13 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   soapNote,
   onSoapNoteChange,
   onExportAndSave,
-  onExportPdfOnly, 
+  onExportPdfOnly,
   isGeneratingPdf,
-  isSavingToAirtable,
+  isSavingToDatabase,
   isEditing = false,
   editingPrescription = null
 }) => {
-  
+
   const handlePatientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onPatientInfoChange(e.target.name as keyof PatientInfo, e.target.value);
   };
@@ -79,7 +79,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
         alert('Por favor, selecciona un archivo de imagen.');
         return;
       }
-      
+
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
         alert('La imagen debe ser menor a 2MB.');
@@ -100,27 +100,27 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   };
 
   const getExportAndSaveButtonText = () => {
-    if (isGeneratingPdf && isSavingToAirtable) return 'Generando PDF y Guardando...';
-    if (isGeneratingPdf) return 'Generando PDF...'; 
-    if (isSavingToAirtable) return 'Guardando en Base de Datos...';
+    if (isGeneratingPdf && isSavingToDatabase) return 'Generando PDF y Guardando...';
+    if (isGeneratingPdf) return 'Generando PDF...';
+    if (isSavingToDatabase) return 'Guardando en Base de Datos...';
     if (isEditing) return 'Guardar Corrección';
     return 'Exportar PDF y Guardar en Base de Datos';
   };
 
   const getExportOnlyButtonText = () => {
-    if (isGeneratingPdf && !isSavingToAirtable) return 'Generando PDF...'; // Only show if this button initiated PDF
+    if (isGeneratingPdf && !isSavingToDatabase) return 'Generando PDF...'; // Only show if this button initiated PDF
     return 'Exportar PDF Solamente';
   };
 
   // Determine if the "Export PDF Only" button should be disabled
-  const isExportOnlyDisabled = isGeneratingPdf; 
+  const isExportOnlyDisabled = isGeneratingPdf;
   // Determine if the "Export and Save" button should be disabled
-  const isExportAndSaveDisabled = isGeneratingPdf || isSavingToAirtable;
+  const isExportAndSaveDisabled = isGeneratingPdf || isSavingToDatabase;
 
 
   return (
     <form onSubmit={(e) => e.preventDefault()} className="space-y-6 p-6 bg-white shadow-lg rounded-xl h-full overflow-y-auto">
-      
+
       <section>
         <h3 className="text-xl font-semibold text-primary mb-3 border-b pb-2">Información del Médico</h3>
         <div className="space-y-4">
@@ -184,7 +184,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
             />
           </div>
-           <div>
+          <div>
             <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">Teléfono de la Clínica</label>
             <input
               type="tel"
@@ -245,9 +245,9 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
               {doctorInfo.signatureImageUrl && (
                 <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-md">
                   <div className="flex items-center space-x-2">
-                    <img 
-                      src={doctorInfo.signatureImageUrl} 
-                      alt="Firma" 
+                    <img
+                      src={doctorInfo.signatureImageUrl}
+                      alt="Firma"
                       className="h-8 w-auto border border-gray-200 rounded"
                     />
                     <span className="text-sm text-green-700">Firma cargada exitosamente</span>
@@ -270,72 +270,72 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
       <section>
         <h3 className="text-xl font-semibold text-primary mb-3 border-b pb-2">Información del Paciente</h3>
         <div className="space-y-4">
+          <div>
+            <label htmlFor="patientName" className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo del Paciente</label>
+            <input
+              type="text"
+              name="name"
+              id="patientName"
+              value={patientInfo.name}
+              onChange={handlePatientInputChange}
+              placeholder="Ej: Juan García"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <label htmlFor="patientName" className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo del Paciente</label>
-                <input
-                    type="text"
-                    name="name"
-                    id="patientName"
-                    value={patientInfo.name}
-                    onChange={handlePatientInputChange}
-                    placeholder="Ej: Juan García"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-                />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label htmlFor="patientAge" className="block text-sm font-medium text-gray-700 mb-1">Edad</label>
-                    <input
-                        type="number" // Use number for age for better input control
-                        name="age"
-                        id="patientAge"
-                        value={patientInfo.age}
-                        onChange={handlePatientInputChange}
-                        placeholder="Ej: 30"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="patientDob" className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
-                    <input
-                        type="date" // Standard date picker
-                        name="dob"
-                        id="patientDob"
-                        value={patientInfo.dob}
-                        onChange={handlePatientInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-                    />
-                </div>
+              <label htmlFor="patientAge" className="block text-sm font-medium text-gray-700 mb-1">Edad</label>
+              <input
+                type="number" // Use number for age for better input control
+                name="age"
+                id="patientAge"
+                value={patientInfo.age}
+                onChange={handlePatientInputChange}
+                placeholder="Ej: 30"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+              />
             </div>
             <div>
-                <label htmlFor="patientId" className="block text-sm font-medium text-gray-700 mb-1">Número de Expediente (Auto-generado)</label>
-                <div className="flex gap-2">
-                    <input
-                        type="text"
-                        name="patientId"
-                        id="patientId"
-                        value={patientInfo.patientId}
-                        onChange={handlePatientInputChange}
-                        placeholder="Se genera automáticamente al escribir el nombre"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-                        readOnly
-                    />
-                    <button
-                        type="button"
-                        onClick={() => {
-                            if (patientInfo.name.trim()) {
-                                const newPatientId = onGeneratePatientId(patientInfo.name);
-                                onPatientInfoChange('patientId', newPatientId);
-                            }
-                        }}
-                        className="px-3 py-2 text-xs bg-blue-100 text-blue-700 border border-blue-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        disabled={!patientInfo.name.trim()}
-                    >
-                        Regenerar
-                    </button>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Se genera automáticamente basado en la fecha y nombre del paciente</p>
+              <label htmlFor="patientDob" className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+              <input
+                type="date" // Standard date picker
+                name="dob"
+                id="patientDob"
+                value={patientInfo.dob}
+                onChange={handlePatientInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+              />
             </div>
+          </div>
+          <div>
+            <label htmlFor="patientId" className="block text-sm font-medium text-gray-700 mb-1">Número de Expediente (Auto-generado)</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                name="patientId"
+                id="patientId"
+                value={patientInfo.patientId}
+                onChange={handlePatientInputChange}
+                placeholder="Se genera automáticamente al escribir el nombre"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                readOnly
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (patientInfo.name.trim()) {
+                    const newPatientId = onGeneratePatientId(patientInfo.name);
+                    onPatientInfoChange('patientId', newPatientId);
+                  }
+                }}
+                className="px-3 py-2 text-xs bg-blue-100 text-blue-700 border border-blue-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                disabled={!patientInfo.name.trim()}
+              >
+                Regenerar
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Se genera automáticamente basado en la fecha y nombre del paciente</p>
+          </div>
         </div>
       </section>
 
@@ -427,7 +427,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
           <p className="text-xs text-gray-500 mt-1">Selecciona el período para el seguimiento del paciente</p>
         </div>
       </section>
-      
+
       <div className="pt-4 border-t space-y-3">
         <Button
           type="button"
@@ -443,11 +443,11 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
         <Button
           type="button"
           onClick={onExportPdfOnly}
-          variant="outline" 
+          variant="outline"
           size="lg"
           className="w-full"
           leftIcon={<DownloadIcon />}
-          disabled={isExportOnlyDisabled} 
+          disabled={isExportOnlyDisabled}
         >
           {getExportOnlyButtonText()}
         </Button>

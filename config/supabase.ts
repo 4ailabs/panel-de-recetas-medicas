@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 
 // IMPORTANT: Replace with your actual Supabase credentials
 // You should ideally store these as environment variables in production
-const supabaseUrl = 'https://uyozrtzezbehwegfvlkq.supabase.co' // e.g., 'https://your-project.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5b3pydHplemJlaHdlZ2Z2bGtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyNDkwODUsImV4cCI6MjA3NDgyNTA4NX0.0IJGc2dyRurmVna7yJUO-JgdrKRwbKkO9--zKNCMtus' // Your anon/public key
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)

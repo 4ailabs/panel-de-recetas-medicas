@@ -9,7 +9,7 @@ import NotificationContainer from './components/NotificationContainer';
 import { generateNativePdf } from './services/pdfNativeService';
 import { supabaseService } from './services/supabaseService'; // Import Supabase service
 import { v4 as uuidv4 } from 'uuid';
-import { useNotifications } from './hooks/useNotifications'; 
+import { useNotifications } from './hooks/useNotifications';
 
 // Application configuration
 // All data is now stored in Supabase - no Airtable dependency
@@ -43,7 +43,7 @@ const generatePatientId = (patientName: string): string => {
   // Extract initials from patient name
   const nameParts = patientName.trim().split(/\s+/);
   let initials = '';
-  
+
   if (nameParts.length >= 2) {
     // Take first letter of first name and first letter of last name
     initials = nameParts[0].charAt(0).toUpperCase() + nameParts[nameParts.length - 1].charAt(0).toUpperCase();
@@ -56,7 +56,7 @@ const generatePatientId = (patientName: string): string => {
   const todayKey = `expediente_count_${dateStr}_${initials}`;
   const currentCount = parseInt(localStorage.getItem(todayKey) || '0') + 1;
   localStorage.setItem(todayKey, currentCount.toString());
-  
+
   const sequential = String(currentCount).padStart(2, '0');
 
   return `${dateStr}${initials}${sequential}`;
@@ -79,7 +79,7 @@ const loadDoctorInfoFromStorage = (): DoctorInfo => {
     contact: '',
     clinicEmail: '',
     professionalID: '',
-    university: '', 
+    university: '',
     logo1Url: '',
     logo2Url: '',
     signatureImageUrl: '',
@@ -96,12 +96,12 @@ const saveDoctorInfoToStorage = (doctorInfo: DoctorInfo) => {
 
 const App: React.FC = () => {
   const { notifications, removeNotification, showSuccess, showError, showWarning } = useNotifications();
-  
+
   const [patientInfo, setPatientInfo] = useState<PatientInfo>({
     name: '',
     age: '',
     dob: '',
-    patientId: '' 
+    patientId: ''
   });
   const [doctorInfo, setDoctorInfo] = useState<DoctorInfo>(loadDoctorInfoFromStorage());
   const [medications, setMedications] = useState<MedicationItem[]>([]);
@@ -110,12 +110,12 @@ const App: React.FC = () => {
   const [nextAppointment, setNextAppointment] = useState<string>('');
   const [soapNote, setSoapNote] = useState<SOAPData | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
-  const [isSavingToAirtable, setIsSavingToAirtable] = useState<boolean>(false); 
-  
+  const [isSavingToDatabase, setIsSavingToDatabase] = useState<boolean>(false);
+
   // Navigation state
   const [currentView, setCurrentView] = useState<'form' | 'history' | 'detail'>('form');
   const [selectedPrescription, setSelectedPrescription] = useState<PrescriptionWithIds | null>(null);
-  
+
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editingPrescription, setEditingPrescription] = useState<PrescriptionWithIds | null>(null);
@@ -140,12 +140,12 @@ const App: React.FC = () => {
   const handlePatientInfoChange = useCallback((field: keyof PatientInfo, value: string) => {
     setPatientInfo(prev => {
       const newPatientInfo = { ...prev, [field]: value };
-      
+
       // Auto-generate patient ID when name is entered
       if (field === 'name' && value.trim() !== '') {
         newPatientInfo.patientId = generatePatientId(value);
       }
-      
+
       return newPatientInfo;
     });
   }, []);
@@ -166,7 +166,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleUpdateMedication = useCallback((id: string, field: keyof Omit<MedicationItem, 'id'>, value: string) => {
-    setMedications(prev => 
+    setMedications(prev =>
       prev.map(med => med.id === id ? { ...med, [field]: value } : med)
     );
   }, []);
@@ -180,7 +180,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleUpdateSupplement = useCallback((id: string, updatedSupplement: WellkittSupplement) => {
-    setSupplements(prev => 
+    setSupplements(prev =>
       prev.map(supp => supp.id === id ? updatedSupplement : supp)
     );
   }, []);
@@ -202,7 +202,7 @@ const App: React.FC = () => {
   }, []);
 
   // Function getCurrentDateTimeFormatted is defined globally above (line 16)
-  
+
   const currentPrescriptionData = useCallback((): PrescriptionData => {
     return {
       patient: patientInfo,
@@ -219,31 +219,31 @@ const App: React.FC = () => {
 
   const handleExportPdfOnly = useCallback(async () => {
     const dataToPreview = currentPrescriptionData();
-     if (!dataToPreview.patient.name && !dataToPreview.doctor.name && dataToPreview.medications.length === 0 && dataToPreview.supplements.length === 0) {
-        alert("Por favor, completa al menos algunos datos de la receta antes de exportar.");
-        return;
+    if (!dataToPreview.patient.name && !dataToPreview.doctor.name && dataToPreview.medications.length === 0 && dataToPreview.supplements.length === 0) {
+      alert("Por favor, completa al menos algunos datos de la receta antes de exportar.");
+      return;
     }
 
     setIsGeneratingPdf(true);
     const fileName = dataToPreview.patient.name ? `Receta-${dataToPreview.patient.name.replace(/\s+/g, '_')}.pdf` : 'Receta.pdf';
 
-      try {
-        await generateNativePdf(dataToPreview, fileName);
-        showSuccess('PDF Exportado', 'La receta se ha exportado exitosamente.');
-        clearPatientInfo();
-      } catch(e) {
-        console.error("Error durante la generación del PDF:", e);
-        showError('Error de Exportación', 'Ocurrió un error al generar el PDF. Revisa la consola para más detalles.');
-      } finally {
-        setIsGeneratingPdf(false);
-      }
+    try {
+      await generateNativePdf(dataToPreview, fileName);
+      showSuccess('PDF Exportado', 'La receta se ha exportado exitosamente.');
+      clearPatientInfo();
+    } catch (e) {
+      console.error("Error durante la generación del PDF:", e);
+      showError('Error de Exportación', 'Ocurrió un error al generar el PDF. Revisa la consola para más detalles.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   }, [currentPrescriptionData, clearPatientInfo]);
 
   const handleExportAndSave = useCallback(async () => {
     const dataToSave = currentPrescriptionData();
     if (!dataToSave.patient.name && !dataToSave.doctor.name && dataToSave.medications.length === 0 && dataToSave.supplements.length === 0) {
-        alert("Por favor, completa al menos algunos datos de la receta antes de exportar/guardar.");
-        return;
+      alert("Por favor, completa al menos algunos datos de la receta antes de exportar/guardar.");
+      return;
     }
 
     setIsGeneratingPdf(true);
@@ -252,7 +252,7 @@ const App: React.FC = () => {
     try {
       await generateNativePdf(dataToSave, fileName);
       setIsGeneratingPdf(false);
-      setIsSavingToAirtable(true);
+      setIsSavingToDatabase(true);
 
       // Save to Supabase only
       const supabaseSuccess = await supabaseService.savePrescription(dataToSave);
@@ -264,14 +264,14 @@ const App: React.FC = () => {
         showError('Error al Guardar', 'No se pudo guardar la receta en la base de datos. Revisa la consola para más detalles.');
         clearPatientInfo();
       }
-    } catch(e) {
+    } catch (e) {
       console.error("Error durante el proceso de exportación o guardado:", e);
       showError('Error General', 'Ocurrió un error durante la exportación o guardado. Revisa la consola para más detalles.');
     } finally {
       setIsGeneratingPdf(false);
-      setIsSavingToAirtable(false);
+      setIsSavingToDatabase(false);
     }
-  }, [currentPrescriptionData, clearPatientInfo]); 
+  }, [currentPrescriptionData, clearPatientInfo]);
 
   // Navigation functions
   const handleViewHistory = useCallback(() => {
@@ -292,7 +292,7 @@ const App: React.FC = () => {
   const handleEditPrescription = useCallback((prescription: PrescriptionWithIds) => {
     setEditingPrescription(prescription);
     setIsEditing(true);
-    
+
     // Load prescription data into form
     setPatientInfo(prescription.patient);
     setDoctorInfo(prescription.doctor);
@@ -300,7 +300,7 @@ const App: React.FC = () => {
     setSupplements(prescription.supplements);
     setGeneralNotes(prescription.generalNotes || '');
     setNextAppointment(prescription.nextAppointment || '');
-    
+
     setCurrentView('form');
   }, []);
 
@@ -319,7 +319,7 @@ const App: React.FC = () => {
       'Receta-Corregida.pdf';
 
     setIsGeneratingPdf(true);
-    setIsSavingToAirtable(true);
+    setIsSavingToDatabase(true);
 
     try {
       await generateNativePdf(dataToSave, fileName);
@@ -342,7 +342,7 @@ const App: React.FC = () => {
       showError('Error de Corrección', 'Ocurrió un error durante la corrección. Revisa la consola para más detalles.');
     } finally {
       setIsGeneratingPdf(false);
-      setIsSavingToAirtable(false);
+      setIsSavingToDatabase(false);
     }
   }, [editingPrescription, currentPrescriptionData, handleCancelEdit]);
 
@@ -362,7 +362,7 @@ const App: React.FC = () => {
   if (currentView === 'history') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 p-4 sm:p-6 lg:p-8">
-        <PatientHistory 
+        <PatientHistory
           onBackToForm={handleBackToForm}
           onViewPrescription={handleViewPrescription}
           onEditPrescription={handleEditPrescription}
@@ -374,7 +374,7 @@ const App: React.FC = () => {
   if (currentView === 'detail' && selectedPrescription) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 p-4 sm:p-6 lg:p-8">
-        <PrescriptionDetail 
+        <PrescriptionDetail
           prescription={selectedPrescription}
           onBack={handleBackToForm}
           onEdit={handleEditPrescription}
@@ -415,7 +415,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </header>
-      
+
       <main className="container mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <div className="lg:sticky lg:top-8">
           <PrescriptionForm
@@ -438,24 +438,24 @@ const App: React.FC = () => {
             onGeneratePatientId={generatePatientId}
             soapNote={soapNote}
             onSoapNoteChange={handleSoapNoteChange}
-            onExportAndSave={isEditing ? handleSaveCorrection : handleExportAndSave} 
-            onExportPdfOnly={handleExportPdfOnly} 
+            onExportAndSave={isEditing ? handleSaveCorrection : handleExportAndSave}
+            onExportPdfOnly={handleExportPdfOnly}
             isGeneratingPdf={isGeneratingPdf}
-            isSavingToAirtable={isSavingToAirtable}
+            isSavingToDatabase={isSavingToDatabase}
             isEditing={isEditing}
             editingPrescription={editingPrescription}
           />
         </div>
-        
+
         <div className="bg-gray-200 p-4 rounded-xl shadow-inner">
-           <PrescriptionPreview data={previewDisplayData} previewId={PREVIEW_ELEMENT_ID} />
+          <PrescriptionPreview data={previewDisplayData} previewId={PREVIEW_ELEMENT_ID} />
         </div>
       </main>
 
       <footer className="text-center mt-12 py-6 border-t border-gray-300">
         <p className="text-sm text-neutral">&copy; {new Date().getFullYear()} Panel de Recetas Médicas. 4 ailabs.</p>
       </footer>
-      
+
       {/* Notification Container */}
       <NotificationContainer
         notifications={notifications}

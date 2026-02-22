@@ -32,9 +32,9 @@ export interface PrescriptionWithIds extends PrescriptionData {
 }
 
 export class SupabaseService {
-  
+
   // ===== DOCTOR OPERATIONS =====
-  
+
   /**
    * Create or update a doctor
    */
@@ -96,7 +96,7 @@ export class SupabaseService {
   }
 
   // ===== PATIENT OPERATIONS =====
-  
+
   /**
    * Create or update a patient
    */
@@ -161,7 +161,12 @@ export class SupabaseService {
     try {
       const { data, error } = await supabase
         .from('patients')
-        .select('*')
+        .select(`
+          *,
+          prescriptions (
+            id
+          )
+        `)
         .ilike('name', `%${query}%`)
         .order('created_at', { ascending: false });
 
@@ -170,7 +175,15 @@ export class SupabaseService {
         return [];
       }
 
-      return data || [];
+      // Transform to include count in a flatter structure
+      return (data || []).map(patient => {
+        return {
+          ...patient,
+          totalPrescriptions: patient.prescriptions?.length || 0,
+          lastVisit: patient.created_at,
+          patientId: patient.patient_id // Ensure mapping matches component expectations
+        };
+      });
     } catch (error) {
       console.error('Error in searchPatients:', error);
       return [];
@@ -178,16 +191,16 @@ export class SupabaseService {
   }
 
   // ===== PRESCRIPTION OPERATIONS =====
-  
+
   /**
    * Save complete prescription with all related data
    */
   async savePrescription(prescriptionData: PrescriptionData): Promise<boolean> {
     try {
       console.log('Starting savePrescription with data:', prescriptionData);
-      
+
       // Start a transaction-like operation
-      
+
       // 1. Save doctor
       console.log('Saving doctor...');
       const doctorId = await this.saveDoctor(prescriptionData.doctor);
@@ -216,7 +229,7 @@ export class SupabaseService {
         next_appointment: prescriptionData.nextAppointment,
         general_notes: prescriptionData.generalNotes
       });
-      
+
       const { data: prescription, error: prescriptionError } = await supabase
         .from('prescriptions')
         .insert({
@@ -234,12 +247,12 @@ export class SupabaseService {
         console.error('Prescription error:', prescriptionError);
         throw new Error(`Failed to save prescription: ${prescriptionError.message}`);
       }
-      
+
       if (!prescription) {
         console.error('No prescription data returned');
         throw new Error('Failed to save prescription: No data returned');
       }
-      
+
       console.log('Prescription saved with ID:', prescription.id);
 
       // 4. Save medications
@@ -295,7 +308,7 @@ export class SupabaseService {
   }
 
   // ===== SOAP NOTES OPERATIONS =====
-  
+
   /**
    * Save SOAP note for a prescription
    */
@@ -356,7 +369,7 @@ export class SupabaseService {
   }
 
   // ===== HISTORIAL OPERATIONS =====
-  
+
   /**
    * Get patient history
    */
@@ -419,7 +432,7 @@ export class SupabaseService {
   }
 
   // ===== UTILITY METHODS =====
-  
+
   /**
    * Transform Supabase data to PrescriptionData structure
    */
@@ -484,9 +497,9 @@ export class SupabaseService {
   async savePrescriptionCorrection(data: PrescriptionData, originalPrescriptionId: string): Promise<boolean> {
     try {
       // 1. Get original prescription data
-      const { data: originalPrescription, error: originalError } = await supabase
+      const { error: originalError } = await supabase
         .from('prescriptions')
-        .select('*')
+        .select('id')
         .eq('id', originalPrescriptionId)
         .single();
 
@@ -498,7 +511,7 @@ export class SupabaseService {
       // 2. Mark original prescription as corrected
       const { error: updateError } = await supabase
         .from('prescriptions')
-        .update({ 
+        .update({
           is_corrected: true,
           corrected_at: new Date().toISOString()
         })
@@ -511,12 +524,12 @@ export class SupabaseService {
 
       // 3. Save new prescription with reference to original
       const success = await this.savePrescription(data);
-      
+
       if (success) {
         // 4. Update the new prescription to reference the original
         const { error: linkError } = await supabase
           .from('prescriptions')
-          .update({ 
+          .update({
             original_prescription_id: originalPrescriptionId,
             correction_reason: 'Corrección de datos médicos'
           })
@@ -535,14 +548,14 @@ export class SupabaseService {
   }
 
   // ===== DELETION OPERATIONS =====
-  
+
   /**
    * Delete patient and all related data (cascade deletion)
    */
   async deletePatient(patientId: string): Promise<boolean> {
     try {
       console.log('Starting deletion of patient:', patientId);
-      
+
       // 1. First, find the patient by patient_id (expediente)
       const { data: patient, error: patientFetchError } = await supabase
         .from('patients')
@@ -561,7 +574,7 @@ export class SupabaseService {
       }
 
       console.log('Found patient with DB ID:', patient.id);
-      
+
       // 2. Get all prescriptions for this patient using the DB ID
       const { data: prescriptions, error: prescriptionsError } = await supabase
         .from('prescriptions')
@@ -578,7 +591,7 @@ export class SupabaseService {
       // 2. Delete prescription medications for each prescription
       if (prescriptions && prescriptions.length > 0) {
         const prescriptionIds = prescriptions.map(p => p.id);
-        
+
         // Delete prescription medications
         const { error: medicationsError } = await supabase
           .from('prescription_medications')
@@ -651,7 +664,7 @@ export class SupabaseService {
   async deletePrescription(prescriptionId: string): Promise<boolean> {
     try {
       console.log('Starting deletion of prescription:', prescriptionId);
-      
+
       // 1. First, find the prescription by prescription_id (RX-xxxxx)
       const { data: prescription, error: prescriptionFetchError } = await supabase
         .from('prescriptions')
@@ -670,7 +683,7 @@ export class SupabaseService {
       }
 
       console.log('Found prescription with DB ID:', prescription.id);
-      
+
       // 2. Delete prescription medications using the DB ID
       const { error: medicationsError } = await supabase
         .from('prescription_medications')
