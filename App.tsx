@@ -8,6 +8,7 @@ import PrescriptionDetail from './components/PrescriptionDetail';
 import NotificationContainer from './components/NotificationContainer';
 import { generateNativePdf } from './services/pdfNativeService';
 import { supabaseService } from './services/supabaseService'; // Import Supabase service
+import { isSupabaseConfigured } from './config/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { useNotifications } from './hooks/useNotifications';
 
@@ -387,6 +388,17 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-sky-100 p-4 sm:p-6 lg:p-8">
       <header className="mb-8 text-center">
+        {!isSupabaseConfigured && (
+          <div className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-left rounded-r-lg shadow-sm">
+            <h3 className="font-bold flex items-center gap-2">
+              <span className="text-xl">⚠️</span> Configuración Incompleta
+            </h3>
+            <p className="mt-1 text-sm">
+              No se detectaron las variables de entorno para Supabase.
+              Si estás en Vercel, asegúrate de haber agregado <code>VITE_SUPABASE_URL</code> y <code>VITE_SUPABASE_ANON_KEY</code> en la configuración del proyecto.
+            </p>
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h1 className="text-4xl font-bold text-primary">

@@ -1,99 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light only" />
-    <meta name="theme-color" content="#F9FAFB" />
-    <title>Panel de Recetas Médicas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-      // Immediate check after CDN scripts
-      console.log('--- START DIAGNOSTIC CHECK ---');
-      // Check html2canvas
-      console.log('[DIAGNOSTIC] window.html2canvas:', typeof window.html2canvas === 'function' ? 'Found (function)' : window.html2canvas);
 
-      // Check jsPDF (main UMD pattern)
-      console.log('[DIAGNOSTIC] Checking for window.jspdf object...');
-      if (typeof window.jspdf === 'object' && window.jspdf !== null) {
-        console.log('[DIAGNOSTIC] window.jspdf: Found (object)');
-        console.log('[DIAGNOSTIC] Checking for window.jspdf.jsPDF function...');
-        console.log('[DIAGNOSTIC] window.jspdf.jsPDF:', typeof window.jspdf.jsPDF === 'function' ? 'Found (function)' : window.jspdf.jsPDF);
-      } else {
-        console.log('[DIAGNOSTIC] window.jspdf: Not found or not an object. Value:', window.jspdf);
-      }
-
-      // Check jsPDF (fallback direct global)
-      console.log('[DIAGNOSTIC] Checking for window.jsPDF function (fallback)...');
-      console.log('[DIAGNOSTIC] window.jsPDF (fallback check):', typeof window.jsPDF === 'function' ? 'Found (function)' : window.jsPDF);
-      console.log('--- END DIAGNOSTIC CHECK ---');
-    </script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: 'var(--color-primary)',
-              secondary: 'var(--color-secondary)',
-              accent: 'var(--color-accent)',
-              neutral: 'var(--color-neutral)',
-              'base-100': 'var(--color-base-100)',
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="theme-color" content="#F9FAFB" />
+  <title>Panel de Recetas Médicas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--color-primary)',
+            secondary: 'var(--color-secondary)',
+            accent: 'var(--color-accent)',
+            neutral: 'var(--color-neutral)',
+            'base-100': 'var(--color-base-100)',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
           },
         },
-      }
-    </script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-      :root {
-        --color-primary: #3B82F6; /* Blue 500 */
-        --color-secondary: #10B981; /* Emerald 500 */
-        --color-accent: #EC4899; /* Pink 500 */
-        --color-neutral: #4B5563; /* Gray 600 */
-        --color-base-100: #F9FAFB; /* Gray 50 */
-      }
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--color-base-100);
-      }
-      
-      /* Force light theme - prevent dark mode */
-      html {
-        color-scheme: light only !important;
-      }
-      
+      },
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --color-primary: #3B82F6;
+      /* Blue 500 */
+      --color-secondary: #10B981;
+      /* Emerald 500 */
+      --color-accent: #EC4899;
+      /* Pink 500 */
+      --color-neutral: #4B5563;
+      /* Gray 600 */
+      --color-base-100: #F9FAFB;
+      /* Gray 50 */
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--color-base-100);
+    }
+
+    /* Force light theme - prevent dark mode */
+    html {
+      color-scheme: light only !important;
+    }
+
+    body {
+      background-color: #F9FAFB !important;
+      color: #111827 !important;
+    }
+
+    /* Ensure all text remains dark */
+    * {
+      color-scheme: light only !important;
+    }
+
+    /* Override any dark mode styles */
+    @media (prefers-color-scheme: dark) {
+
+      html,
       body {
         background-color: #F9FAFB !important;
         color: #111827 !important;
       }
-      
-      /* Ensure all text remains dark */
+
       * {
-        color-scheme: light only !important;
+        background-color: inherit !important;
+        color: inherit !important;
       }
-      
-      /* Override any dark mode styles */
-      @media (prefers-color-scheme: dark) {
-        html, body {
-          background-color: #F9FAFB !important;
-          color: #111827 !important;
-        }
-        
-        * {
-          background-color: inherit !important;
-          color: inherit !important;
-        }
-      }
-      /* Ensure html2canvas captures the background color of elements */
-      .prescription-preview-area {
-        background-color: white !important; /* Or any desired background */
-      }
-    </style>
+    }
+
+    /* Ensure html2canvas captures the background color of elements */
+    .prescription-preview-area {
+      background-color: white !important;
+      /* Or any desired background */
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -104,11 +95,13 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+
+<body>
+  <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>

@@ -5,8 +5,15 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Create a single supabase client for interacting with your database
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Export configuration status for UI feedback
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  console.warn('Supabase credentials missing. Check your environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY).');
+}
+
+// Create client (use empty strings if missing to avoid crash, but check isSupabaseConfigured in UI)
+export const supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder');
 
 // Database types for TypeScript
 export interface Database {
