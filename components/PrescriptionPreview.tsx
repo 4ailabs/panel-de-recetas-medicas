@@ -23,13 +23,10 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
   // Generate QR Code when prescription data changes
   useEffect(() => {
     if (prescriptionId && doctor.name && patient.name) {
+      const verificationUrl = `https://energyintelligence.work/api/verificar?folio=${encodeURIComponent(prescriptionId)}`;
       const qrData = {
         prescriptionId,
-        doctorName: doctor.name,
-        doctorId: doctor.professionalID,
-        patientName: patient.name,
-        dateTime,
-        verificationUrl: `https://energyintelligence.work/receta-verificada?folio=${prescriptionId}&doctor=${encodeURIComponent(doctor.name)}&cedula=${doctor.professionalID}`
+        verificationUrl
       };
       
       QRCode.toDataURL(JSON.stringify(qrData), {
@@ -95,7 +92,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
       {/* Doctor and Date Info - More compact */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h2 className="text-base font-semibold text-gray-700">Dr. {doctor.name || <span className="italic text-gray-400">Nombre del Médico</span>}</h2>
+          <h2 className="text-base font-semibold text-gray-700">{doctor.name?.startsWith('Dr.') || doctor.name?.startsWith('Dra.') ? doctor.name : `Dr. ${doctor.name}`|| <span className="italic text-gray-400">Nombre del Médico</span>}</h2>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
             {doctor.professionalID && <span>C.P. {doctor.professionalID}</span>}
             {doctor.university && <span>{doctor.university}</span>}
@@ -216,7 +213,7 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
               <div className="border-t-2 border-gray-700 pt-2">
                 {(doctor.name || doctor.professionalID || doctor.university) ? (
                   <>
-                    {doctor.name && <p className="font-semibold text-xs">Dr. {doctor.name}</p>}
+                    {doctor.name && <p className="font-semibold text-xs">{doctor.name.startsWith('Dr.') || doctor.name.startsWith('Dra.') ? doctor.name : `Dr. ${doctor.name}`}</p>}
                     {doctor.professionalID && <p className="text-xs">C.P. {doctor.professionalID}</p>}
                     {doctor.university && <p className="text-xs">{doctor.university}</p>}
                   </>

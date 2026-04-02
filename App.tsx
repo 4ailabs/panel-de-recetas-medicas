@@ -11,6 +11,7 @@ import { supabaseService } from './services/supabaseService'; // Import Supabase
 import { isSupabaseConfigured } from './config/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { useNotifications } from './hooks/useNotifications';
+import { loadDoctorInfo, saveDoctorImages } from './constants/doctorInfo';
 
 // Application configuration
 // All data is now stored in Supabase - no Airtable dependency
@@ -63,37 +64,7 @@ const generatePatientId = (patientName: string): string => {
   return `${dateStr}${initials}${sequential}`;
 };
 
-// Helper functions for localStorage
-const loadDoctorInfoFromStorage = (): DoctorInfo => {
-  try {
-    const saved = localStorage.getItem('doctorInfo');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-  } catch (error) {
-    console.error('Error loading doctor info from localStorage:', error);
-  }
-  return {
-    name: '',
-    clinicName: '',
-    clinicAddress: '',
-    contact: '',
-    clinicEmail: '',
-    professionalID: '',
-    university: '',
-    logo1Url: '',
-    logo2Url: '',
-    signatureImageUrl: '',
-  };
-};
-
-const saveDoctorInfoToStorage = (doctorInfo: DoctorInfo) => {
-  try {
-    localStorage.setItem('doctorInfo', JSON.stringify(doctorInfo));
-  } catch (error) {
-    console.error('Error saving doctor info to localStorage:', error);
-  }
-};
+// Doctor info: datos fijos + logos/firma de localStorage
 
 const App: React.FC = () => {
   const { notifications, removeNotification, showSuccess, showError, showWarning } = useNotifications();
@@ -104,7 +75,7 @@ const App: React.FC = () => {
     dob: '',
     patientId: ''
   });
-  const [doctorInfo, setDoctorInfo] = useState<DoctorInfo>(loadDoctorInfoFromStorage());
+  const [doctorInfo, setDoctorInfo] = useState<DoctorInfo>(loadDoctorInfo());
   const [medications, setMedications] = useState<MedicationItem[]>([]);
   const [supplements, setSupplements] = useState<WellkittSupplement[]>([]);
   const [generalNotes, setGeneralNotes] = useState<string>('');
@@ -152,11 +123,14 @@ const App: React.FC = () => {
   }, []);
 
   const handleDoctorInfoChange = useCallback((field: keyof DoctorInfo, value: string) => {
-    setDoctorInfo(prev => {
-      const newDoctorInfo = { ...prev, [field]: value };
-      saveDoctorInfoToStorage(newDoctorInfo);
-      return newDoctorInfo;
-    });
+    // Solo permite cambiar logos y firma (los datos del doctor son fijos)
+    if (field === 'logo1Url' || field === 'logo2Url' || field === 'signatureImageUrl') {
+      setDoctorInfo(prev => {
+        const newDoctorInfo = { ...prev, [field]: value };
+        saveDoctorImages(newDoctorInfo);
+        return newDoctorInfo;
+      });
+    }
   }, []);
 
   const handleAddMedication = useCallback(() => {

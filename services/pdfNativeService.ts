@@ -285,7 +285,8 @@ export const generateNativePdf = async (
       p.setFont('helvetica', 'bold');
       p.setFontSize(12);
       p.setTextColor(30, 64, 175);
-      p.text(`Dr. ${d.doctor.name || 'Nombre del Médico'}`, MARGIN, yPos);
+      const docName = d.doctor.name || 'Nombre del Médico';
+      p.text(docName.startsWith('Dr.') || docName.startsWith('Dra.') ? docName : `Dr. ${docName}`, MARGIN, yPos);
       yPos += 6;
 
       p.setFont('helvetica', 'normal');
@@ -315,7 +316,7 @@ export const generateNativePdf = async (
     pdf.setProperties({
       title: `Receta Médica - ${data.patient.name || 'Paciente'}`,
       subject: 'Receta Médica',
-      author: `Dr. ${data.doctor.name || 'Médico'}`,
+      author: (data.doctor.name?.startsWith('Dr.') || data.doctor.name?.startsWith('Dra.')) ? data.doctor.name : `Dr. ${data.doctor.name || 'Médico'}`,
       creator: 'Panel de Recetas Médicas',
     });
 
@@ -444,7 +445,7 @@ export const generateNativePdf = async (
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(8);
       pdf.setTextColor(31, 41, 55);
-      const dname = `Dr. ${data.doctor.name}`;
+      const dname = data.doctor.name?.startsWith('Dr.') || data.doctor.name?.startsWith('Dra.') ? data.doctor.name : `Dr. ${data.doctor.name}`;
       pdf.text(dname, sigX + (70 - pdf.getTextWidth(dname)) / 2, sigY);
 
       // Page number
