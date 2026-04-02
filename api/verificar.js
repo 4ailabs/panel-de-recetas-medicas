@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 function renderHTML(rx, errorMsg) {
   const doctorName = 'Dr. Miguel Ojeda Rios';
   const cedula = '4098976';
-  const university = 'Benemerita Universidad Autonoma de Puebla';
+  const university = 'UABJO, ISNN';
 
   if (errorMsg) {
     return `<!DOCTYPE html>

@@ -10,11 +10,11 @@ import type { DoctorInfo } from '../types';
 const FIXED_DOCTOR_INFO: Omit<DoctorInfo, 'logo1Url' | 'logo2Url' | 'signatureImageUrl'> = {
   name: 'Dr. Miguel Ojeda Rios',
   professionalID: '4098976',
-  university: 'Benemerita Universidad Autonoma de Puebla',
+  university: 'UABJO, ISNN',
   clinicName: 'Centrobioenergetica',
-  clinicAddress: 'Puebla, Mexico',
-  contact: '2224536789',
-  clinicEmail: 'miguel@centrobioenergetica.com',
+  clinicAddress: 'Acapulco 36 Int 803, Col. Roma, Ciudad de Mexico',
+  contact: '5579076626',
+  clinicEmail: 'webcentrobio@icloud.com',
 };
 
 /**
