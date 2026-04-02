@@ -11,7 +11,7 @@ import { supabaseService } from './services/supabaseService'; // Import Supabase
 import { isSupabaseConfigured } from './config/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { useNotifications } from './hooks/useNotifications';
-import { loadDoctorInfo, saveDoctorImages } from './constants/doctorInfo';
+import { loadDoctorInfo, saveDoctorSignature } from './constants/doctorInfo';
 
 // Application configuration
 // All data is now stored in Supabase - no Airtable dependency
@@ -124,13 +124,10 @@ const App: React.FC = () => {
   }, []);
 
   const handleDoctorInfoChange = useCallback((field: keyof DoctorInfo, value: string) => {
-    // Solo permite cambiar logos y firma (los datos del doctor son fijos)
-    if (field === 'logo1Url' || field === 'logo2Url' || field === 'signatureImageUrl') {
-      setDoctorInfo(prev => {
-        const newDoctorInfo = { ...prev, [field]: value };
-        saveDoctorImages(newDoctorInfo);
-        return newDoctorInfo;
-      });
+    // Solo permite cambiar la firma (logos y datos son fijos)
+    if (field === 'signatureImageUrl') {
+      setDoctorInfo(prev => ({ ...prev, signatureImageUrl: value }));
+      saveDoctorSignature(value);
     }
   }, []);
 

@@ -145,148 +145,43 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
         </div>
       </section>
 
+      {/* Datos del médico (fijos) + firma digital */}
       <section>
-        <h3 className="text-xl font-semibold text-primary mb-3 border-b pb-2">Información del Médico</h3>
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="doctorName" className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo del Médico</label>
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md mb-4">
+          <p className="text-sm font-semibold text-blue-800">{doctorInfo.name}</p>
+          <p className="text-xs text-blue-600">C.P. {doctorInfo.professionalID} · {doctorInfo.university}</p>
+          <p className="text-xs text-blue-600">{doctorInfo.clinicName} · {doctorInfo.clinicAddress}</p>
+        </div>
+        <div>
+          <label htmlFor="signatureUpload" className="block text-sm font-medium text-gray-700 mb-1">Firma Digital (opcional)</label>
+          <div className="space-y-2">
             <input
-              type="text"
-              name="name"
-              id="doctorName"
-              value={doctorInfo.name}
-              onChange={handleDoctorInputChange}
-              placeholder="Ej: Dra. Ana Pérez"
+              type="file"
+              id="signatureUpload"
+              accept="image/*"
+              onChange={handleSignatureUpload}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
             />
-          </div>
-          <div>
-            <label htmlFor="professionalID" className="block text-sm font-medium text-gray-700 mb-1">Cédula Profesional</label>
-            <input
-              type="text"
-              name="professionalID"
-              id="professionalID"
-              value={doctorInfo.professionalID}
-              onChange={handleDoctorInputChange}
-              placeholder="Ej: 1234567"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="university" className="block text-sm font-medium text-gray-700 mb-1">Universidad (Se mostrará en la receta)</label>
-            <input
-              type="text"
-              name="university"
-              id="university"
-              value={doctorInfo.university}
-              onChange={handleDoctorInputChange}
-              placeholder="Ej: Universidad Nacional Autónoma de México"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="clinicName" className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Clínica</label>
-            <input
-              type="text"
-              name="clinicName"
-              id="clinicName"
-              value={doctorInfo.clinicName}
-              onChange={handleDoctorInputChange}
-              placeholder="Ej: Centro Médico Bienestar"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="clinicAddress" className="block text-sm font-medium text-gray-700 mb-1">Dirección de la Clínica</label>
-            <input
-              type="text"
-              name="clinicAddress"
-              id="clinicAddress"
-              value={doctorInfo.clinicAddress}
-              onChange={handleDoctorInputChange}
-              placeholder="Ej: Calle Salud 123, Ciudad Médica"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">Teléfono de la Clínica</label>
-            <input
-              type="tel"
-              name="contact"
-              id="contact"
-              value={doctorInfo.contact}
-              onChange={handleDoctorInputChange}
-              placeholder="Ej: (555) 123-4567"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="clinicEmail" className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico de la Clínica</label>
-            <input
-              type="email"
-              name="clinicEmail"
-              id="clinicEmail"
-              value={doctorInfo.clinicEmail}
-              onChange={handleDoctorInputChange}
-              placeholder="Ej: info@clinicabienestar.com"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="logo1Url" className="block text-sm font-medium text-gray-700 mb-1">URL del Logo 1 (Opcional)</label>
-            <input
-              type="url"
-              name="logo1Url"
-              id="logo1Url"
-              value={doctorInfo.logo1Url}
-              onChange={handleDoctorInputChange}
-              placeholder="https://ejemplo.com/logo1.png"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="logo2Url" className="block text-sm font-medium text-gray-700 mb-1">URL del Logo 2 (Opcional)</label>
-            <input
-              type="url"
-              name="logo2Url"
-              id="logo2Url"
-              value={doctorInfo.logo2Url}
-              onChange={handleDoctorInputChange}
-              placeholder="https://ejemplo.com/logo2.png"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="signatureUpload" className="block text-sm font-medium text-gray-700 mb-1">Firma Digital (Imagen PNG/JPG)</label>
-            <div className="space-y-2">
-              <input
-                type="file"
-                id="signatureUpload"
-                accept="image/*"
-                onChange={handleSignatureUpload}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
-              />
-              {doctorInfo.signatureImageUrl && (
-                <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-md">
-                  <div className="flex items-center space-x-2">
-                    <img
-                      src={doctorInfo.signatureImageUrl}
-                      alt="Firma"
-                      className="h-8 w-auto border border-gray-200 rounded"
-                    />
-                    <span className="text-sm text-green-700">Firma cargada exitosamente</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={clearSignature}
-                    className="text-sm text-red-600 hover:text-red-800"
-                  >
-                    Eliminar
-                  </button>
+            {doctorInfo.signatureImageUrl && (
+              <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-md">
+                <div className="flex items-center space-x-2">
+                  <img
+                    src={doctorInfo.signatureImageUrl}
+                    alt="Firma"
+                    className="h-8 w-auto border border-gray-200 rounded"
+                  />
+                  <span className="text-sm text-green-700">Firma cargada</span>
                 </div>
-              )}
-              <p className="text-xs text-gray-500">Sube una imagen transparente (PNG recomendado) de tu firma. Máximo 2MB.</p>
-            </div>
+                <button
+                  type="button"
+                  onClick={clearSignature}
+                  className="text-sm text-red-600 hover:text-red-800"
+                >
+                  Quitar firma
+                </button>
+              </div>
+            )}
+            <p className="text-xs text-gray-500">PNG transparente recomendado. Algunas farmacias requieren firma escrita — puedes quitar la digital.</p>
           </div>
         </div>
       </section>

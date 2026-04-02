@@ -7,7 +7,10 @@ import type { DoctorInfo } from '../types';
  * el resto de datos son fijos.
  */
 
-const FIXED_DOCTOR_INFO: Omit<DoctorInfo, 'logo1Url' | 'logo2Url' | 'signatureImageUrl'> = {
+// Logo ISNN (fijo)
+const ISNN_LOGO_URL = 'https://images.squarespace-cdn.com/content/v1/63937c55c3c2e84a13a3ede9/3088fb6e-5467-4d96-83f6-ceb69e52e49b/Square-ISNN-Logo-768x640.jpg?format=750w';
+
+const FIXED_DOCTOR_INFO: Omit<DoctorInfo, 'signatureImageUrl'> = {
   name: 'Dr. Miguel Ojeda Rios',
   professionalID: '4098976',
   university: 'UABJO, ISNN',
@@ -15,6 +18,8 @@ const FIXED_DOCTOR_INFO: Omit<DoctorInfo, 'logo1Url' | 'logo2Url' | 'signatureIm
   clinicAddress: 'Acapulco 36 Int 803, Col. Roma, Ciudad de Mexico',
   contact: '5579076626',
   clinicEmail: 'webcentrobio@icloud.com',
+  logo1Url: ISNN_LOGO_URL,
+  logo2Url: '',
 };
 
 /**
@@ -22,26 +27,19 @@ const FIXED_DOCTOR_INFO: Omit<DoctorInfo, 'logo1Url' | 'logo2Url' | 'signatureIm
  * Datos fijos + logos/firma de localStorage (si existen).
  */
 export const loadDoctorInfo = (): DoctorInfo => {
-  let logo1Url = '';
-  let logo2Url = '';
   let signatureImageUrl = '';
 
   try {
-    const saved = localStorage.getItem('doctorInfo');
+    const saved = localStorage.getItem('doctorSignature');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      logo1Url = parsed.logo1Url || '';
-      logo2Url = parsed.logo2Url || '';
-      signatureImageUrl = parsed.signatureImageUrl || '';
+      signatureImageUrl = saved;
     }
   } catch {
-    // Si falla localStorage, continúa sin logos
+    // Sin firma
   }
 
   return {
     ...FIXED_DOCTOR_INFO,
-    logo1Url,
-    logo2Url,
     signatureImageUrl,
   };
 };
@@ -49,13 +47,13 @@ export const loadDoctorInfo = (): DoctorInfo => {
 /**
  * Guarda solo los datos visuales (logos y firma) en localStorage.
  */
-export const saveDoctorImages = (doctorInfo: DoctorInfo) => {
+export const saveDoctorSignature = (signatureImageUrl: string) => {
   try {
-    localStorage.setItem('doctorInfo', JSON.stringify({
-      logo1Url: doctorInfo.logo1Url,
-      logo2Url: doctorInfo.logo2Url,
-      signatureImageUrl: doctorInfo.signatureImageUrl,
-    }));
+    if (signatureImageUrl) {
+      localStorage.setItem('doctorSignature', signatureImageUrl);
+    } else {
+      localStorage.removeItem('doctorSignature');
+    }
   } catch {
     // Silencioso
   }
