@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { PrescriptionData } from '../types';
+import { PrescriptionData, DOCUMENT_TYPE_LABELS } from '../types';
 import QRCode from 'qrcode';
 
 interface PrescriptionPreviewProps {
@@ -123,8 +123,8 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
       
       {/* Medications Symbol and Title */}
       <div className="flex items-center mb-4">
-        <span className="text-2xl font-serif text-primary mr-2">℞</span>
-        <h3 className="text-lg font-semibold text-gray-700">Receta</h3>
+        {(!data.documentType || data.documentType === 'receta') && <span className="text-2xl font-serif text-primary mr-2">&#8478;</span>}
+        <h3 className="text-lg font-semibold text-gray-700">{DOCUMENT_TYPE_LABELS[data.documentType || 'receta']}</h3>
       </div>
 
       {/* Medications List - Vertical layout */}
@@ -165,18 +165,20 @@ const PrescriptionPreview: React.FC<PrescriptionPreviewProps> = ({ data, preview
         </>
       )}
 
-      {/* General Notes and Next Appointment - Side by side */}
+      {/* General Notes and Next Appointment */}
       {(generalNotes || nextAppointment) && (
-        <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className={`mb-4 ${data.documentType && data.documentType !== 'receta' ? '' : 'grid grid-cols-1 md:grid-cols-2 gap-3'}`}>
           {generalNotes && (
-            <section className="p-3 border border-gray-300 rounded-md bg-gray-50">
-              <h3 className="text-sm font-semibold text-gray-700 mb-1">Indicaciones Generales:</h3>
-              <p className="text-xs text-gray-600 whitespace-pre-line">{generalNotes}</p>
+            <section className={`p-3 border border-gray-300 rounded-md bg-gray-50 ${data.documentType && data.documentType !== 'receta' ? 'mb-3' : ''}`}>
+              <h3 className="text-sm font-semibold text-gray-700 mb-1">
+                {data.documentType === 'nutricion' ? 'Plan Nutricional:' : data.documentType === 'nota' ? 'Nota:' : 'Indicaciones Generales:'}
+              </h3>
+              <p className={`text-gray-600 whitespace-pre-line ${data.documentType && data.documentType !== 'receta' ? 'text-sm' : 'text-xs'}`}>{generalNotes}</p>
             </section>
           )}
           {nextAppointment && (
             <div className="p-3 border border-blue-300 rounded-md bg-blue-50">
-              <h3 className="text-sm font-semibold text-blue-700 mb-1">Próxima Cita:</h3>
+              <h3 className="text-sm font-semibold text-blue-700 mb-1">Proxima Cita:</h3>
               <p className="text-xs text-blue-600 font-medium">{nextAppointment}</p>
             </div>
           )}

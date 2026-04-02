@@ -37,6 +37,14 @@ export interface DoctorInfo {
   signatureImageUrl: string; // Base64 encoded signature image
 }
 
+export type DocumentType = 'receta' | 'nota' | 'nutricion';
+
+export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  receta: 'Receta Medica',
+  nota: 'Nota Medica',
+  nutricion: 'Plan Nutricional',
+};
+
 export interface PrescriptionData {
   patient: PatientInfo;
   doctor: DoctorInfo;
@@ -47,6 +55,7 @@ export interface PrescriptionData {
   soapNote?: SOAPData; // SOAP note for medical records
   dateTime: string; // Changed from 'date' to 'dateTime'
   prescriptionId: string; // Unique prescription ID/folio
+  documentType?: DocumentType; // Tipo de documento: receta, nota o plan nutricional
 }
 
 // SOAP Note structure for medical notes

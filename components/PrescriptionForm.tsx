@@ -1,5 +1,5 @@
 import React from 'react';
-import { PatientInfo, MedicationItem, DoctorInfo, WellkittSupplement, SOAPData } from '../types';
+import { PatientInfo, MedicationItem, DoctorInfo, WellkittSupplement, SOAPData, DocumentType, DOCUMENT_TYPE_LABELS } from '../types';
 import MedicationInput from './MedicationInput';
 import WellkittSupplementSelector from './WellkittSupplementSelector';
 import SOAPForm from './SOAPForm';
@@ -33,6 +33,8 @@ interface PrescriptionFormProps {
   isSavingToDatabase: boolean;
   isEditing?: boolean;
   editingPrescription?: PrescriptionWithIds | null;
+  documentType: DocumentType;
+  onDocumentTypeChange: (type: DocumentType) => void;
 }
 
 const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
@@ -60,7 +62,9 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   isGeneratingPdf,
   isSavingToDatabase,
   isEditing = false,
-  editingPrescription = null
+  editingPrescription = null,
+  documentType,
+  onDocumentTypeChange
 }) => {
 
   const handlePatientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,6 +124,26 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
 
   return (
     <form onSubmit={(e) => e.preventDefault()} className="space-y-6 p-6 bg-white shadow-lg rounded-xl h-full overflow-y-auto">
+
+      {/* Tipo de Documento */}
+      <section>
+        <div className="flex gap-2">
+          {(Object.entries(DOCUMENT_TYPE_LABELS) as [DocumentType, string][]).map(([type, label]) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => onDocumentTypeChange(type)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                documentType === type
+                  ? 'bg-blue-700 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section>
         <h3 className="text-xl font-semibold text-primary mb-3 border-b pb-2">Información del Médico</h3>

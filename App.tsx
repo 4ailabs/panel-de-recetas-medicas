@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { FileText } from 'lucide-react';
-import { PatientInfo, MedicationItem, DoctorInfo, PrescriptionData, WellkittSupplement, PrescriptionWithIds, SOAPData } from './types';
+import { PatientInfo, MedicationItem, DoctorInfo, PrescriptionData, WellkittSupplement, PrescriptionWithIds, SOAPData, DocumentType } from './types';
 import PrescriptionForm from './components/PrescriptionForm';
 import PrescriptionPreview from './components/PrescriptionPreview';
 import PatientHistory from './components/PatientHistory';
@@ -81,6 +81,7 @@ const App: React.FC = () => {
   const [generalNotes, setGeneralNotes] = useState<string>('');
   const [nextAppointment, setNextAppointment] = useState<string>('');
   const [soapNote, setSoapNote] = useState<SOAPData | null>(null);
+  const [documentType, setDocumentType] = useState<DocumentType>('receta');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
   const [isSavingToDatabase, setIsSavingToDatabase] = useState<boolean>(false);
 
@@ -189,8 +190,9 @@ const App: React.FC = () => {
       soapNote: soapNote,
       dateTime: getCurrentDateTimeFormatted(),
       prescriptionId: generatePrescriptionId(),
+      documentType: documentType,
     };
-  }, [patientInfo, doctorInfo, medications, supplements, generalNotes, nextAppointment, soapNote]);
+  }, [patientInfo, doctorInfo, medications, supplements, generalNotes, nextAppointment, soapNote, documentType]);
 
   const handleExportPdfOnly = useCallback(async () => {
     const dataToPreview = currentPrescriptionData();
@@ -330,6 +332,7 @@ const App: React.FC = () => {
     nextAppointment: nextAppointment,
     dateTime: getCurrentDateTimeFormatted(),
     prescriptionId: generatePrescriptionId(),
+    documentType: documentType,
   } : null;
 
 
@@ -430,6 +433,8 @@ const App: React.FC = () => {
             isSavingToDatabase={isSavingToDatabase}
             isEditing={isEditing}
             editingPrescription={editingPrescription}
+            documentType={documentType}
+            onDocumentTypeChange={setDocumentType}
           />
         </div>
 
